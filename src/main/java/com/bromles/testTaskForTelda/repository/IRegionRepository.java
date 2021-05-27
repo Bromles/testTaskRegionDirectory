@@ -18,6 +18,9 @@ public interface IRegionRepository {
     @Select("SELECT key, id, name, short_name FROM regions WHERE id = #{id}")
     Region getRegionById(String id);
 
+    @Select("SELECT key, id, name, short_name FROM regions WHERE name = #{name}")
+    List<Region> getRegionByName(String name);
+
     @Update("UPDATE regions set name = #{region.name}, short_name = #{region.shortName} WHERE id = #{id}")
     Region updateRegionById(String id, Region region);
 

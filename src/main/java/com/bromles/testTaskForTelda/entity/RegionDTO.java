@@ -1,5 +1,6 @@
 package com.bromles.testTaskForTelda.entity;
 
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -13,7 +14,7 @@ public class RegionDTO {
     @NotBlank(message = "Region name cannot be blank")
     public String name;
 
-    @NotBlank(message = "Region short name cannot be blank")
+    @Length(min = 3, max = 3, message = "Region short name must be 3 characters")
     public String shortName;
 
     public RegionDTO(String id, String name, String shortName) {

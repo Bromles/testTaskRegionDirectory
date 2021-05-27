@@ -24,6 +24,19 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
+    public List<RegionDTO> addListOfRegions(List<RegionDTO> regionDTOS) {
+        List<RegionDTO> regionDTOList = new ArrayList<>();
+
+        for(RegionDTO regionDTO : regionDTOS) {
+            Region region = new Region(regionDTO);
+            regionRepository.addRegion(region);
+            regionDTOList.add(regionDTO);
+        }
+
+        return regionDTOList;
+    }
+
+    @Override
     public List<RegionDTO> getAll() {
         List<RegionDTO> regionDTOS= new ArrayList<>();
         List<Region> regions = regionRepository.getRegions();
@@ -38,6 +51,18 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     @Override
     public RegionDTO getRegionById(String id) {
         return new RegionDTO(regionRepository.getRegionById(id));
+    }
+
+    @Override
+    public List<RegionDTO> getRegionByName(String name) {
+        List<RegionDTO> regionDTOS= new ArrayList<>();
+        List<Region> regions = regionRepository.getRegionByName(name);
+
+        for (Region region : regions) {
+            regionDTOS.add(new RegionDTO(region));
+        }
+
+        return regionDTOS;
     }
 
     @Override
