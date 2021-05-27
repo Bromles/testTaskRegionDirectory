@@ -5,5 +5,8 @@ CREATE TABLE IF NOT EXISTS regions
     name       varchar(255) not null,
     short_name varchar(10)  not null,
     primary key (key),
-    unique (id)
+    unique (id),
+    INDEX (id),
+    INDEX (name),
+    INDEX(short_name)
 );
