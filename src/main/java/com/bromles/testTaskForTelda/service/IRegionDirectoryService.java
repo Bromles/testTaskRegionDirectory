@@ -1,18 +1,18 @@
 package com.bromles.testTaskForTelda.service;
 
-import com.bromles.testTaskForTelda.entity.Region;
+import com.bromles.testTaskForTelda.entity.RegionDTO;
 
 import java.util.List;
 
 public interface IRegionDirectoryService {
 
-    int addRegion(Region region);
+    RegionDTO addRegion(RegionDTO regionDTO);
 
-    List<Region> getAll();
+    List<RegionDTO> getAll();
 
-    Region getRegionById(Integer id);
+    RegionDTO getRegionById(String id);
 
-    int updateRegionById(Integer id, Region region);
+    RegionDTO updateRegionById(String id, RegionDTO regionDTO);
 
-    int deleteRegionById(Integer id);
+    int deleteRegionById(String id);
 }

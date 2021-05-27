@@ -19,6 +19,6 @@ public class RegionDirectoryControllerTest {
 
     @Test
     public void shouldReturnListOfRegions() throws Exception {
-        mockMvc.perform(get("/regions")).andDo(print()).andExpect(status().isOk());
+        mockMvc.perform(get("/v1/regions")).andDo(print()).andExpect(status().isOk());
     }
 }

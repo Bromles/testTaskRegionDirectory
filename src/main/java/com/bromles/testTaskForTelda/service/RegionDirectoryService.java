@@ -1,9 +1,11 @@
 package com.bromles.testTaskForTelda.service;
 
 import com.bromles.testTaskForTelda.entity.Region;
+import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.repository.IRegionRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,27 +18,35 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public int addRegion(Region region) {
-        return regionRepository.addRegion(region);
+    public RegionDTO addRegion(RegionDTO regionDTO) {
+        regionRepository.addRegion(new Region(regionDTO));
+        return regionDTO;
     }
 
     @Override
-    public List<Region> getAll() {
-        return regionRepository.getRegions();
+    public List<RegionDTO> getAll() {
+        List<RegionDTO> regionDTOS= new ArrayList<>();
+        List<Region> regions = regionRepository.getRegions();
+
+        for (Region region : regions) {
+            regionDTOS.add(new RegionDTO(region));
+        }
+
+        return regionDTOS;
     }
 
     @Override
-    public Region getRegionById(Integer id) {
-        return regionRepository.getRegionById(id);
+    public RegionDTO getRegionById(String id) {
+        return new RegionDTO(regionRepository.getRegionById(id));
     }
 
     @Override
-    public int updateRegionById(Integer id, Region region) {
-        return regionRepository.updateRegionById(id, region);
+    public RegionDTO updateRegionById(String id, RegionDTO regionDTO) {
+        return new RegionDTO(regionRepository.updateRegionById(id, new Region(regionDTO)));
     }
 
     @Override
-    public int deleteRegionById(Integer id) {
+    public int deleteRegionById(String id) {
         return regionRepository.deleteRegionById(id);
     }
 }

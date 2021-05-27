@@ -1,40 +1,47 @@
 package com.bromles.testTaskForTelda.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-
 public class Region {
 
-    @Positive
-    private Integer id;
+    private Integer key;
 
-    @NotBlank
+    private String id;
+
     private String name;
 
-    @NotBlank
-    // TODO add pattern validation
     private String shortName;
 
-    public Region(Integer id, String name, String shortName) {
+    public Region(Integer key, String id, String name, String shortName) {
+        this.key = key;
         this.id = id;
         this.name = name;
         this.shortName = shortName;
     }
 
-    @Override
-    public String toString() {
-        return "Region{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", shortName='" + shortName + '\'' +
-                '}';
+    public Region(String id, String name, String shortName) {
+        this.id = id;
+        this.name = name;
+        this.shortName = shortName;
     }
 
-    public Integer getId() {
+    public Region(RegionDTO regionDTO) {
+        this.id = regionDTO.id;
+        this.name = regionDTO.name;
+        this.shortName = regionDTO.shortName;
+    }
+
+    public Integer getKey() {
+        return key;
+    }
+
+    public void setKey(Integer key) {
+        this.key = key;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

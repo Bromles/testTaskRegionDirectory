@@ -8,19 +8,19 @@ import java.util.List;
 @Mapper
 public interface IRegionRepository {
 
-    @Insert("INSERT INTO regions(id, name, short_name) VALUES (#{id}, #{name}, #{shortName})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
+    @Insert("INSERT INTO regions (id, name, short_name) VALUES (#{id}, #{name}, #{shortName})")
+    @Options(useGeneratedKeys = true, keyProperty = "key", keyColumn = "key")
     int addRegion(Region region);
 
-    @Select("SELECT * FROM regions")
+    @Select("SELECT key, id, name, short_name FROM regions")
     List<Region> getRegions();
 
-    @Select("SELECT * FROM regions WHERE id = #{id}")
-    Region getRegionById(Integer id);
+    @Select("SELECT key, id, name, short_name FROM regions WHERE id = #{id}")
+    Region getRegionById(String id);
 
     @Update("UPDATE regions set name = #{region.name}, short_name = #{region.shortName} WHERE id = #{id}")
-    int updateRegionById(Integer id, Region region);
+    Region updateRegionById(String id, Region region);
 
     @Delete("DELETE FROM regions WHERE id = #{id}")
-    int deleteRegionById(Integer id);
+    int deleteRegionById(String id);
 }
