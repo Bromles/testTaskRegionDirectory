@@ -59,6 +59,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        System.out.println("\t\tenters the 'handleHttpMediaTypeNotAcceptable' handler");
         return ResponseEntity.status(status).body(new ExceptionResponse(status, "Unacceptable http media type"));
     }
 }

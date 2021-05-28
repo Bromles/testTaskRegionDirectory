@@ -8,8 +8,6 @@ public interface IRegionDirectoryService {
 
     RegionDTO addRegion(RegionDTO regionDTO);
 
-    List<RegionDTO> addListOfRegions(List<RegionDTO> regionDTOS);
-
     List<RegionDTO> getAll();
 
     RegionDTO getRegionById(String id);

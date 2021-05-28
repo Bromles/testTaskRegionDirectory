@@ -24,19 +24,6 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public List<RegionDTO> addListOfRegions(List<RegionDTO> regionDTOS) {
-        List<RegionDTO> regionDTOList = new ArrayList<>();
-
-        for(RegionDTO regionDTO : regionDTOS) {
-            Region region = new Region(regionDTO);
-            regionRepository.addRegion(region);
-            regionDTOList.add(regionDTO);
-        }
-
-        return regionDTOList;
-    }
-
-    @Override
     public List<RegionDTO> getAll() {
         List<RegionDTO> regionDTOS= new ArrayList<>();
         List<Region> regions = regionRepository.getRegions();

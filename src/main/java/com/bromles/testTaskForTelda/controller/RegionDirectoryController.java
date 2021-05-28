@@ -25,13 +25,6 @@ public class RegionDirectoryController {
         return regionDirectoryService.addRegion(regionDTO);
     }
 
-    @PostMapping("/regions/add-multi")
-    List<RegionDTO> addListOfRegions(
-            @RequestBody
-            @NotEmpty(message = "Input regions list cannot be empty") List<@Valid RegionDTO> regionDTOS) {
-        return regionDirectoryService.addListOfRegions(regionDTOS);
-    }
-
     @GetMapping("/regions/get")
     List<RegionDTO> getRegion(@Valid @RequestParam(required = false) String name) {
         if (name != null) {
