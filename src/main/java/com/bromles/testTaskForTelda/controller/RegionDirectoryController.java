@@ -2,11 +2,14 @@ package com.bromles.testTaskForTelda.controller;
 
 import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.service.IRegionDirectoryService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("v1")
 public class RegionDirectoryController {
@@ -23,15 +26,18 @@ public class RegionDirectoryController {
     }
 
     @PostMapping("/regions/add-multi")
-    List<RegionDTO> addListOfRegions(@RequestBody List<@Valid RegionDTO> regionDTOS) {
+    List<RegionDTO> addListOfRegions(
+            @RequestBody
+            @NotEmpty(message = "Input regions list cannot be empty") List<@Valid RegionDTO> regionDTOS) {
         return regionDirectoryService.addListOfRegions(regionDTOS);
     }
 
     @GetMapping("/regions/get")
     List<RegionDTO> getRegion(@Valid @RequestParam(required = false) String name) {
-        if(name != null) {
+        if (name != null) {
             return regionDirectoryService.getRegionByName(name);
-        } else {
+        }
+        else {
             return regionDirectoryService.getAll();
         }
     }
