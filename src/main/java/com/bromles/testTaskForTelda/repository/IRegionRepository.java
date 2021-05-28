@@ -22,7 +22,7 @@ public interface IRegionRepository {
     List<Region> getRegionByName(String name);
 
     @Update("UPDATE regions set name = #{region.name}, short_name = #{region.shortName} WHERE id = #{id}")
-    Region updateRegionById(String id, Region region);
+    int updateRegionById(String id, Region region);
 
     @Delete("DELETE FROM regions WHERE id = #{id}")
     int deleteRegionById(String id);

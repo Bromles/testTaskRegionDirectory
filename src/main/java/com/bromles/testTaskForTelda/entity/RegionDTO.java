@@ -1,9 +1,8 @@
 package com.bromles.testTaskForTelda.entity;
 
-import org.hibernate.validator.constraints.Length;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 public class RegionDTO {
 
@@ -12,11 +11,10 @@ public class RegionDTO {
     public String id;
 
     @NotBlank(message = "Region name cannot be blank")
-    @Pattern(regexp = "[a-zA-Zа-яА-Я() -]+", message = "Region name can contain only Cyrillic, Latin, spaces, dashes " +
-            "and brackets")
+    @Pattern(regexp = "[а-яА-Я() -]+", message = "Region name can contain only Cyrillic, spaces, dashes and brackets")
     public String name;
 
-    @Length(min = 3, max = 3, message = "Region short name must be 3 characters")
+    @Size(min = 3, max = 3, message = "Region short name must be 3 characters")
     public String shortName;
 
     public RegionDTO(String id, String name, String shortName) {
