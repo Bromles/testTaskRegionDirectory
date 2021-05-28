@@ -8,10 +8,12 @@ import javax.validation.constraints.Pattern;
 public class RegionDTO {
 
     @NotBlank(message = "Region code cannot be blank")
-    @Pattern(regexp = "[0-9]{3}|[0-9]{2}", message = "Region code must be 2 or 3 digits")
+    @Pattern(regexp = "\\d{2,3}", message = "Region code must be 2 or 3 digits")
     public String id;
 
     @NotBlank(message = "Region name cannot be blank")
+    @Pattern(regexp = "[a-zA-Zа-яА-Я() -]+", message = "Region name can contain only Cyrillic, Latin, spaces, dashes " +
+            "and brackets")
     public String name;
 
     @Length(min = 3, max = 3, message = "Region short name must be 3 characters")
