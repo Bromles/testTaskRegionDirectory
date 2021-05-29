@@ -2,23 +2,25 @@ package com.bromles.testTaskForTelda.controller;
 
 import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
-import com.bromles.testTaskForTelda.exception.handler.ExceptionResponseEntityGenerator;
+import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
 import com.bromles.testTaskForTelda.service.IRegionDirectoryService;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-// TODO add input parameters validation
 @Controller
 @RequestMapping("v1/regions")
+@Validated
 public class RegionDirectoryController {
 
     private final IRegionDirectoryService regionDirectoryService;
@@ -35,88 +37,62 @@ public class RegionDirectoryController {
     }
 
     @GetMapping
-    ResponseEntity<Object> getAll() {
+    ResponseEntity<Object> getAll() throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getAll();
 
-        if (regionDTOs.size() != 0) {
-
-            return ResponseEntity.ok(regionDTOs);
-        }
-        else {
-            return ExceptionResponseEntityGenerator.generate(HttpStatus.NO_CONTENT, "message",
-                    "There are no saved regions");
-        }
+        return ResponseEntity.ok(regionDTOs);
     }
 
     @GetMapping(params = {"name"})
-    ResponseEntity<Object> getByName(@Valid @RequestParam String name) {
+    ResponseEntity<Object> getByName(
+            @Pattern(regexp = "[а-яА-Я() -]+", message = "Region name can contain only Cyrillic, spaces, dashes and brackets")
+            @RequestParam String name) throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getByName(name);
 
-        if (regionDTOs.size() != 0) {
-
-            return ResponseEntity.ok(regionDTOs);
-        }
-        else {
-            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND, "message",
-                    "No regions found by name '" + name + "'");
-        }
+        return ResponseEntity.ok(regionDTOs);
     }
 
     @GetMapping(params = {"short-name"})
-    ResponseEntity<Object> getByShortName(@Valid @RequestParam("short-name") String shortName) {
+    ResponseEntity<Object> getByShortName(
+            @Pattern(regexp = "[А-Я]{3}", message = "Region short name must be 3 capital Cyrillic letters")
+            @RequestParam("short-name") String shortName) throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getByShortName(shortName);
 
-        if (regionDTOs.size() != 0) {
-
-            return ResponseEntity.ok(regionDTOs);
-        }
-        else {
-            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND, "message",
-                    "No regions found by short name '" + shortName + "'");
-        }
+        return ResponseEntity.ok(regionDTOs);
     }
 
     @GetMapping(regionIdMapping)
-    ResponseEntity<Object> getById(@Valid @PathVariable String id) {
+    ResponseEntity<Object> getById(
+            @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
+                    message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
+            @PathVariable String id) throws RecordNotFoundException {
         RegionDTO regionDTO = regionDirectoryService.getById(id);
 
-        if (regionDTO != null) {
-            return ResponseEntity.ok(regionDTO);
-        }
-        else {
-            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND, "message",
-                    "No regions found by id '" + id + "'");
-        }
+        return ResponseEntity.ok(regionDTO);
     }
 
     @PutMapping(regionIdMapping)
-    ResponseEntity<Object> updateById(@Valid @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) {
-        int updatedRows = regionDirectoryService.updateById(id, regionDTO);
+    ResponseEntity<Object> updateById(
+            @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
+                    message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
+            @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) throws RecordNotFoundException {
+        regionDirectoryService.updateById(id, regionDTO);
 
-        if (updatedRows != 0) {
-            Map<String, Object> response = new LinkedHashMap<>();
-            response.put("successful", true);
-            response.put("value", regionDTO);
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("successful", true);
+        response.put("value", regionDTO);
 
-            return ResponseEntity.ok(response);
-        }
-        else {
-            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND, "message",
-                    "No regions updated by id '" + id + "'");
-        }
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping(regionIdMapping)
-    ResponseEntity<Object> deleteById(@Valid @PathVariable String id) {
-        int deletedRows = regionDirectoryService.deleteById(id);
+    ResponseEntity<Object> deleteById(
+            @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
+                    message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
+            @PathVariable String id) throws RecordNotFoundException {
+        regionDirectoryService.deleteById(id);
 
-        if (deletedRows != 0) {
-            return ResponseEntity.ok(new ImmutablePair<>("successful", true));
-        }
-        else {
-            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND, "message",
-                    "No regions deleted by id '" + id + "'");
-        }
+        return ResponseEntity.ok(new ImmutablePair<>("successful", true));
     }
 
     @ExceptionHandler(DuplicateUniqueValuesException.class)
@@ -129,5 +105,16 @@ public class RegionDirectoryController {
         exceptionData.put("violated fields", ex.getViolatedFields());
 
         return ResponseEntity.badRequest().body(exceptionData);
+    }
+
+    @ExceptionHandler(RecordNotFoundException.class)
+    public ResponseEntity<Object> handleRecordNotFoundException(RecordNotFoundException ex) {
+        Map<String, Object> exceptionData = new LinkedHashMap<>();
+
+        exceptionData.put("timestamp", new Date());
+        exceptionData.put("status", HttpStatus.NOT_FOUND.value());
+        exceptionData.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionData);
     }
 }

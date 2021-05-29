@@ -2,6 +2,7 @@ package com.bromles.testTaskForTelda.service;
 
 import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
+import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
 
 import java.util.List;
 
@@ -9,15 +10,15 @@ public interface IRegionDirectoryService {
 
     RegionDTO add(RegionDTO regionDTO) throws DuplicateUniqueValuesException;
 
-    List<RegionDTO> getAll();
+    List<RegionDTO> getAll() throws RecordNotFoundException;
 
-    RegionDTO getById(String id);
+    RegionDTO getById(String id) throws RecordNotFoundException;
 
-    List<RegionDTO> getByName(String name);
+    List<RegionDTO> getByName(String name) throws RecordNotFoundException;
 
-    List<RegionDTO> getByShortName(String shortName);
+    List<RegionDTO> getByShortName(String shortName) throws RecordNotFoundException;
 
-    int updateById(String id, RegionDTO regionDTO);
+    void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException;
 
-    int deleteById(String id);
+    void deleteById(String id) throws RecordNotFoundException;
 }

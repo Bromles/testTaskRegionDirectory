@@ -3,11 +3,15 @@ package com.bromles.testTaskForTelda.service;
 import com.bromles.testTaskForTelda.entity.Region;
 import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
+import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
 import com.bromles.testTaskForTelda.repository.IRegionRepository;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class RegionDirectoryService implements IRegionDirectoryService {
@@ -23,7 +27,8 @@ public class RegionDirectoryService implements IRegionDirectoryService {
         try {
             regionRepository.save(new Region(regionDTO));
             return regionDTO;
-        } catch (DuplicateKeyException ex) {
+        }
+        catch (DuplicateKeyException ex) {
             Map<String, Object> violatedFields = new LinkedHashMap<>();
 
             violatedFields.put("id", regionDTO.id);
@@ -33,60 +38,82 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public List<RegionDTO> getAll() {
-        List<RegionDTO> regionDTOs = new ArrayList<>();
+    public List<RegionDTO> getAll() throws RecordNotFoundException {
+
         List<Region> regions = regionRepository.getAll();
 
-        for (Region region : regions) {
-            regionDTOs.add(new RegionDTO(region));
-        }
-
-        return regionDTOs;
+        return convertRegionsToDTOs(regions);
     }
 
     @Override
-    public RegionDTO getById(String id) {
+    public RegionDTO getById(String id) throws RecordNotFoundException {
         Region region = regionRepository.getById(id);
 
         if (region != null) {
             return new RegionDTO(region);
         }
         else {
-            return null;
+            throw new RecordNotFoundException("id = '" + id + "'");
         }
     }
 
     @Override
-    public List<RegionDTO> getByName(String name) {
-        List<RegionDTO> regionDTOs = new ArrayList<>();
+    public List<RegionDTO> getByName(String name) throws RecordNotFoundException {
         List<Region> regions = regionRepository.getByName(name);
 
-        for (Region region : regions) {
-            regionDTOs.add(new RegionDTO(region));
-        }
-
-        return regionDTOs;
+        return convertRegionsToDTOs(regions, "name = '" + name + "'");
     }
 
     @Override
-    public List<RegionDTO> getByShortName(String shortName) {
-        List<RegionDTO> regionDTOs = new ArrayList<>();
+    public List<RegionDTO> getByShortName(String shortName) throws RecordNotFoundException {
         List<Region> regions = regionRepository.getByShortName(shortName);
 
-        for (Region region : regions) {
-            regionDTOs.add(new RegionDTO(region));
+        return convertRegionsToDTOs(regions, "short name = '" + shortName + "'");
+    }
+
+    @Override
+    public void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException {
+        int updatedRows = regionRepository.updateById(id, new Region(regionDTO));
+
+        if (updatedRows == 0) {
+            throw new RecordNotFoundException("id = '" + id + "'");
         }
-
-        return regionDTOs;
     }
 
     @Override
-    public int updateById(String id, RegionDTO regionDTO) {
-        return regionRepository.updateById(id, new Region(regionDTO));
+    public void deleteById(String id) throws RecordNotFoundException {
+        int deletedRows = regionRepository.deleteById(id);
+
+        if (deletedRows == 0) {
+            throw new RecordNotFoundException("id = '" + id + "'");
+        }
     }
 
-    @Override
-    public int deleteById(String id) {
-        return regionRepository.deleteById(id);
+    private static List<RegionDTO> convertRegionsToDTOs(List<Region> regions, String... params) throws RecordNotFoundException {
+        if (!regions.isEmpty()) {
+            List<RegionDTO> regionDTOs = new ArrayList<>();
+
+            for (Region region : regions) {
+                regionDTOs.add(new RegionDTO(region));
+            }
+
+            return regionDTOs;
+        }
+        else {
+            switch (params.length) {
+                case 0: {
+                    throw new RecordNotFoundException();
+                }
+                case 1: {
+                    throw new RecordNotFoundException(params[0]);
+                }
+                case 2: {
+                    throw new RecordNotFoundException(params[0] + " and " + params[1]);
+                }
+                default: {
+                    throw new IllegalArgumentException("You can pass only 0, 1 or 2 field names");
+                }
+            }
+        }
     }
 }

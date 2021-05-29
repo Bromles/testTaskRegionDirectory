@@ -8,10 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -47,5 +49,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         return generate(HttpStatus.INTERNAL_SERVER_ERROR, "message", "Exception handler not found");
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
+        List<String> errors = ex.getConstraintViolations()
+                .stream()
+                .map(x -> x.getConstraintDescriptor().getMessageTemplate())
+                .collect(Collectors.toList());
+
+        return generate(HttpStatus.BAD_REQUEST, "errors", errors);
     }
 }

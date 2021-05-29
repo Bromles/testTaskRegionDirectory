@@ -2,19 +2,19 @@ package com.bromles.testTaskForTelda.entity;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 public class RegionDTO {
 
     @NotBlank(message = "Region code cannot be blank")
-    @Pattern(regexp = "\\d{2,3}", message = "Region code must be 2 or 3 digits")
+    @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
+            message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
     public String id;
 
     @NotBlank(message = "Region name cannot be blank")
     @Pattern(regexp = "[а-яА-Я() -]+", message = "Region name can contain only Cyrillic, spaces, dashes and brackets")
     public String name;
 
-    @Size(min = 3, max = 3, message = "Region short name must be 3 characters")
+    @Pattern(regexp = "[А-Я]{3}", message = "Region short name must be 3 capital Cyrillic letters")
     public String shortName;
 
     public RegionDTO(String id, String name, String shortName) {

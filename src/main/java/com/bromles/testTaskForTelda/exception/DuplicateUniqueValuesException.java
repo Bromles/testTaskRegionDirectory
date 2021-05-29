@@ -2,11 +2,11 @@ package com.bromles.testTaskForTelda.exception;
 
 import java.util.Map;
 
-public class DuplicateUniqueValuesException extends Exception{
+public class DuplicateUniqueValuesException extends Exception {
 
     private final Map<String, Object> violatedFields;
 
-    public DuplicateUniqueValuesException( Map<String, Object> violatedFields) {
+    public DuplicateUniqueValuesException(Map<String, Object> violatedFields) {
         this.violatedFields = violatedFields;
     }
 
