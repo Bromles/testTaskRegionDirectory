@@ -16,6 +16,8 @@ public interface IRegionDirectoryService {
 
     List<RegionDTO> getByName(String name) throws RecordNotFoundException;
 
+    List<RegionDTO> getByNameBeginning(String nameBeginning) throws RecordNotFoundException;
+
     List<RegionDTO> getByShortName(String shortName) throws RecordNotFoundException;
 
     void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException;

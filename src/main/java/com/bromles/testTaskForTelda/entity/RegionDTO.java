@@ -11,7 +11,7 @@ public class RegionDTO {
     public String id;
 
     @NotBlank(message = "Region name cannot be blank")
-    @Pattern(regexp = "[а-яА-Я() -]+", message = "Region name can contain only Cyrillic, spaces, dashes and brackets")
+    @Pattern(regexp = "[а-яА-Я() -]+", message = "Region name must contain only Cyrillic, spaces, dashes and brackets")
     public String name;
 
     @Pattern(regexp = "[А-Я]{3}", message = "Region short name must be 3 capital Cyrillic letters")

@@ -51,16 +51,27 @@ public class RegionDirectoryController {
 
     @GetMapping(params = {"name"})
     ResponseEntity<Object> getByName(
-            @Pattern(regexp = "[а-яА-Я() -]+", message = "Region name can contain only Cyrillic, spaces, dashes and brackets")
+            @Pattern(regexp = "[а-яА-Я() -]+",
+                    message = "Region name must contain only Cyrillic, spaces, dashes and brackets")
             @RequestParam String name) throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getByName(name);
 
         return ResponseEntity.ok(regionDTOs);
     }
 
+    @GetMapping(params = {"name-beginning"})
+    ResponseEntity<Object> getByNameBeginning(
+            @Pattern(regexp = "[А-Я][а-я]*",
+                    message = "Beginning of region name must contain only Cyrillic letters and begins with Capital one")
+            @RequestParam("name-beginning") String nameBeginning) throws RecordNotFoundException {
+        List<RegionDTO> regionDTOs = regionDirectoryService.getByNameBeginning(nameBeginning);
+
+        return ResponseEntity.ok(regionDTOs);
+    }
+
     @GetMapping(params = {"short-name"})
     ResponseEntity<Object> getByShortName(
-            @Pattern(regexp = "[А-Я]{3}", message = "Region short name must be 3 capital Cyrillic letters")
+            @Pattern(regexp = "[А-Я]{3}", message = "Region short name must be 3 Capital Cyrillic letters")
             @RequestParam("short-name") String shortName) throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getByShortName(shortName);
 

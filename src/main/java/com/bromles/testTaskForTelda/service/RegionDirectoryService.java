@@ -64,6 +64,13 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
+    public List<RegionDTO> getByNameBeginning(String nameBeginning) throws RecordNotFoundException {
+        List<Region> regions = regionRepository.getByNameBeginning(nameBeginning);
+
+        return convertRegionsToDTOs(regions, "name beginning = '" + nameBeginning + "'");
+    }
+
+    @Override
     public List<RegionDTO> getByShortName(String shortName) throws RecordNotFoundException {
         List<Region> regions = regionRepository.getByShortName(shortName);
 

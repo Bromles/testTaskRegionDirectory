@@ -21,6 +21,9 @@ public interface IRegionRepository {
     @Select("SELECT key, id, name, short_name FROM regions WHERE name = #{name}")
     List<Region> getByName(String name);
 
+    @Select("SELECT key, id, name, short_name FROM regions WHERE name LIKE '${nameBeginning}%'")
+    List<Region> getByNameBeginning(String nameBeginning);
+
     @Select("SELECT key, id, name, short_name FROM regions WHERE short_name = #{shortName}")
     List<Region> getByShortName(String shortName);
 
