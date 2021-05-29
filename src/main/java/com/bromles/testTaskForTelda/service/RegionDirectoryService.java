@@ -37,7 +37,14 @@ public class RegionDirectoryService implements IRegionDirectoryService {
 
     @Override
     public RegionDTO getRegionById(String id) {
-        return new RegionDTO(regionRepository.getRegionById(id));
+        Region region = regionRepository.getRegionById(id);
+
+        if(region != null) {
+            return new RegionDTO(region);
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
