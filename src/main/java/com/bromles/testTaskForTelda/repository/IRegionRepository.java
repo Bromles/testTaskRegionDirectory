@@ -21,7 +21,8 @@ public interface IRegionRepository {
     @Select("SELECT key, id, name, short_name FROM regions WHERE name = #{name}")
     List<Region> getRegionByName(String name);
 
-    @Update("UPDATE regions set name = #{region.name}, short_name = #{region.shortName} WHERE id = #{id}")
+    @Update("UPDATE regions set id = #{region.id}, name = #{region.name}, short_name = #{region.shortName} " +
+            "WHERE id = #{id}")
     int updateRegionById(String id, Region region);
 
     @Delete("DELETE FROM regions WHERE id = #{id}")
