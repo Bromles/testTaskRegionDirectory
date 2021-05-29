@@ -29,32 +29,30 @@ public class RegionDirectoryController {
     }
 
     @GetMapping
-    ResponseEntity<Object> getRegion(@Valid @RequestParam(required = false) String name) {
-        List<RegionDTO> regionDTOs;
+    ResponseEntity<Object> getRegion() {
+        List<RegionDTO> regionDTOs = regionDirectoryService.getAll();
 
-        if (name != null) {
-            regionDTOs = regionDirectoryService.getRegionByName(name);
+        if (regionDTOs.size() != 0) {
 
-            if(regionDTOs.size() != 0) {
-
-                return new ResponseEntity<>(regionDTOs, HttpStatus.OK);
-            }
-            else {
-                return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND,
-                        new ImmutablePair<>("message", "No regions found by name '" + name + "'"));
-            }
+            return new ResponseEntity<>(regionDTOs, HttpStatus.OK);
         }
         else {
-            regionDTOs  = regionDirectoryService.getAll();
+            return ExceptionResponseEntityGenerator.generate(HttpStatus.NO_CONTENT,
+                    new ImmutablePair<>("message", "There are no saved regions"));
+        }
+    }
 
-            if(regionDTOs.size() != 0) {
+    @GetMapping(params = {"name"})
+    ResponseEntity<Object> getRegionByName(@Valid @RequestParam String name) {
+        List<RegionDTO> regionDTOs = regionDirectoryService.getRegionByName(name);
 
-                return new ResponseEntity<>(regionDTOs, HttpStatus.OK);
-            }
-            else {
-                return ExceptionResponseEntityGenerator.generate(HttpStatus.NO_CONTENT,
-                        new ImmutablePair<>("message", "There are no saved regions"));
-            }
+        if (regionDTOs.size() != 0) {
+
+            return new ResponseEntity<>(regionDTOs, HttpStatus.OK);
+        }
+        else {
+            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND,
+                    new ImmutablePair<>("message", "No regions found by name '" + name + "'"));
         }
     }
 
@@ -62,7 +60,7 @@ public class RegionDirectoryController {
     ResponseEntity<Object> getRegionById(@Valid @PathVariable String id) {
         RegionDTO regionDTO = regionDirectoryService.getRegionById(id);
 
-        if(regionDTO != null) {
+        if (regionDTO != null) {
             return new ResponseEntity<>(regionDTO, HttpStatus.OK);
         }
         else {
@@ -71,11 +69,13 @@ public class RegionDirectoryController {
         }
     }
 
+    // TODO add protection
     @PutMapping(idMapping)
     RegionDTO updateRegion(@Valid @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) {
         return regionDirectoryService.updateRegionById(id, regionDTO);
     }
 
+    // TODO add protection
     @DeleteMapping(idMapping)
     int deleteRegion(@Valid @PathVariable String id) {
         return regionDirectoryService.deleteRegionById(id);
