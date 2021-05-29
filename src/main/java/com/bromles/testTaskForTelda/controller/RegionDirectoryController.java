@@ -14,6 +14,8 @@ public class RegionDirectoryController {
 
     private final IRegionDirectoryService regionDirectoryService;
 
+    private final String idMapping = "/{id}";
+
     RegionDirectoryController(IRegionDirectoryService regionDirectoryService) {
         this.regionDirectoryService = regionDirectoryService;
     }
@@ -33,17 +35,17 @@ public class RegionDirectoryController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(idMapping)
     RegionDTO getRegionById(@Valid @PathVariable String id) {
         return regionDirectoryService.getRegionById(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(idMapping)
     RegionDTO updateRegion(@Valid @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) {
         return regionDirectoryService.updateRegionById(id, regionDTO);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(idMapping)
     int deleteRegion(@Valid @PathVariable String id) {
         return regionDirectoryService.deleteRegionById(id);
     }
