@@ -33,7 +33,13 @@ public class RegionDirectoryController {
 
     @PostMapping
     ResponseEntity<Object> add(@Valid @RequestBody RegionDTO regionDTO) throws DuplicateUniqueValuesException {
-        return ResponseEntity.ok(regionDirectoryService.add(regionDTO));
+        regionDirectoryService.add(regionDTO);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("successful", true);
+        response.put("value", regionDTO);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping

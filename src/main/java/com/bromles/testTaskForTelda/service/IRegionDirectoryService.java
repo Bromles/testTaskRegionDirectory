@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IRegionDirectoryService {
 
-    RegionDTO add(RegionDTO regionDTO) throws DuplicateUniqueValuesException;
+    void add(RegionDTO regionDTO) throws DuplicateUniqueValuesException;
 
     List<RegionDTO> getAll() throws RecordNotFoundException;
 

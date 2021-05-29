@@ -10,7 +10,7 @@ public interface IRegionRepository {
 
     @Insert("INSERT INTO regions (id, name, short_name) VALUES (#{id}, #{name}, #{shortName})")
     @Options(useGeneratedKeys = true, keyProperty = "key", keyColumn = "key")
-    int save(Region region);
+    void save(Region region);
 
     @Select("SELECT key, id, name, short_name FROM regions")
     List<Region> getAll();

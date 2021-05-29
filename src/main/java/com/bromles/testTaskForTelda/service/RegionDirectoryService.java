@@ -23,10 +23,9 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public RegionDTO add(RegionDTO regionDTO) throws DuplicateUniqueValuesException {
+    public void add(RegionDTO regionDTO) throws DuplicateUniqueValuesException {
         try {
             regionRepository.save(new Region(regionDTO));
-            return regionDTO;
         }
         catch (DuplicateKeyException ex) {
             Map<String, Object> violatedFields = new LinkedHashMap<>();
