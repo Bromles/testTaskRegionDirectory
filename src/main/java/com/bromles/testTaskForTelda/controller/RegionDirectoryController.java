@@ -2,16 +2,14 @@ package com.bromles.testTaskForTelda.controller;
 
 import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.service.IRegionDirectoryService;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Validated
 @RestController
-@RequestMapping("v1")
+@RequestMapping("v1/regions")
 public class RegionDirectoryController {
 
     private final IRegionDirectoryService regionDirectoryService;
@@ -20,12 +18,12 @@ public class RegionDirectoryController {
         this.regionDirectoryService = regionDirectoryService;
     }
 
-    @PostMapping("/regions/add")
-    RegionDTO addRegion(@Valid @RequestBody RegionDTO regionDTO) {
+    @PostMapping
+    RegionDTO addRegion(@Valid @NotNull @RequestBody RegionDTO regionDTO) {
         return regionDirectoryService.addRegion(regionDTO);
     }
 
-    @GetMapping("/regions/get")
+    @GetMapping
     List<RegionDTO> getRegion(@Valid @RequestParam(required = false) String name) {
         if (name != null) {
             return regionDirectoryService.getRegionByName(name);
@@ -35,17 +33,17 @@ public class RegionDirectoryController {
         }
     }
 
-    @GetMapping("/regions/get/{id}")
+    @GetMapping("/{id}")
     RegionDTO getRegionById(@Valid @PathVariable String id) {
         return regionDirectoryService.getRegionById(id);
     }
 
-    @PutMapping("/regions/update/{id}")
+    @PutMapping("/{id}")
     RegionDTO updateRegion(@Valid @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) {
         return regionDirectoryService.updateRegionById(id, regionDTO);
     }
 
-    @DeleteMapping("/regions/delete/{id}")
+    @DeleteMapping("/{id}")
     int deleteRegion(@Valid @PathVariable String id) {
         return regionDirectoryService.deleteRegionById(id);
     }
