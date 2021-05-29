@@ -1,4 +1,4 @@
-package com.bromles.testTaskForTelda.exception;
+package com.bromles.testTaskForTelda.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +15,6 @@ public class ExceptionResponseEntityGenerator {
         body.put("status", status.value());
         body.put(fieldName, value);
 
-        return new ResponseEntity<>(body, status);
+        return ResponseEntity.status(status).body(body);
     }
 }

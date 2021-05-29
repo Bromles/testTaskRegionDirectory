@@ -10,21 +10,24 @@ public interface IRegionRepository {
 
     @Insert("INSERT INTO regions (id, name, short_name) VALUES (#{id}, #{name}, #{shortName})")
     @Options(useGeneratedKeys = true, keyProperty = "key", keyColumn = "key")
-    int addRegion(Region region);
+    int save(Region region);
 
     @Select("SELECT key, id, name, short_name FROM regions")
-    List<Region> getRegions();
+    List<Region> getAll();
 
     @Select("SELECT key, id, name, short_name FROM regions WHERE id = #{id}")
-    Region getRegionById(String id);
+    Region getById(String id);
 
     @Select("SELECT key, id, name, short_name FROM regions WHERE name = #{name}")
-    List<Region> getRegionByName(String name);
+    List<Region> getByName(String name);
+
+    @Select("SELECT key, id, name, short_name FROM regions WHERE short_name = #{shortName}")
+    List<Region> getByShortName(String shortName);
 
     @Update("UPDATE regions set id = #{region.id}, name = #{region.name}, short_name = #{region.shortName} " +
             "WHERE id = #{id}")
-    int updateRegionById(String id, Region region);
+    int updateById(String id, Region region);
 
     @Delete("DELETE FROM regions WHERE id = #{id}")
-    int deleteRegionById(String id);
+    int deleteById(String id);
 }

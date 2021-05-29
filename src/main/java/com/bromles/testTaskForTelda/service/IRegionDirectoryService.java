@@ -1,20 +1,23 @@
 package com.bromles.testTaskForTelda.service;
 
 import com.bromles.testTaskForTelda.entity.RegionDTO;
+import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
 
 import java.util.List;
 
 public interface IRegionDirectoryService {
 
-    RegionDTO addRegion(RegionDTO regionDTO);
+    RegionDTO add(RegionDTO regionDTO) throws DuplicateUniqueValuesException;
 
     List<RegionDTO> getAll();
 
-    RegionDTO getRegionById(String id);
+    RegionDTO getById(String id);
 
-    List<RegionDTO> getRegionByName(String name);
+    List<RegionDTO> getByName(String name);
 
-    int updateRegionById(String id, RegionDTO regionDTO);
+    List<RegionDTO> getByShortName(String shortName);
 
-    int deleteRegionById(String id);
+    int updateById(String id, RegionDTO regionDTO);
+
+    int deleteById(String id);
 }

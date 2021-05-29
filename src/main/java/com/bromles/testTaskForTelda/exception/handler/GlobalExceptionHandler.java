@@ -1,4 +1,4 @@
-package com.bromles.testTaskForTelda.exception;
+package com.bromles.testTaskForTelda.exception.handler;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.bromles.testTaskForTelda.exception.ExceptionResponseEntityGenerator.generate;
+import static com.bromles.testTaskForTelda.exception.handler.ExceptionResponseEntityGenerator.generate;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {

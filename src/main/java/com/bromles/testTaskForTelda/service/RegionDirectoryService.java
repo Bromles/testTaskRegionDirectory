@@ -2,12 +2,12 @@ package com.bromles.testTaskForTelda.service;
 
 import com.bromles.testTaskForTelda.entity.Region;
 import com.bromles.testTaskForTelda.entity.RegionDTO;
+import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
 import com.bromles.testTaskForTelda.repository.IRegionRepository;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class RegionDirectoryService implements IRegionDirectoryService {
@@ -19,19 +19,23 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public RegionDTO addRegion(RegionDTO regionDTO) {
+    public RegionDTO add(RegionDTO regionDTO) throws DuplicateUniqueValuesException {
         try {
-            regionRepository.addRegion(new Region(regionDTO));
+            regionRepository.save(new Region(regionDTO));
             return regionDTO;
         } catch (DuplicateKeyException ex) {
-            return null;
+            Map<String, Object> violatedFields = new LinkedHashMap<>();
+
+            violatedFields.put("id", regionDTO.id);
+
+            throw new DuplicateUniqueValuesException(violatedFields);
         }
     }
 
     @Override
     public List<RegionDTO> getAll() {
         List<RegionDTO> regionDTOs = new ArrayList<>();
-        List<Region> regions = regionRepository.getRegions();
+        List<Region> regions = regionRepository.getAll();
 
         for (Region region : regions) {
             regionDTOs.add(new RegionDTO(region));
@@ -41,8 +45,8 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public RegionDTO getRegionById(String id) {
-        Region region = regionRepository.getRegionById(id);
+    public RegionDTO getById(String id) {
+        Region region = regionRepository.getById(id);
 
         if (region != null) {
             return new RegionDTO(region);
@@ -53,9 +57,9 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public List<RegionDTO> getRegionByName(String name) {
+    public List<RegionDTO> getByName(String name) {
         List<RegionDTO> regionDTOs = new ArrayList<>();
-        List<Region> regions = regionRepository.getRegionByName(name);
+        List<Region> regions = regionRepository.getByName(name);
 
         for (Region region : regions) {
             regionDTOs.add(new RegionDTO(region));
@@ -65,12 +69,24 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public int updateRegionById(String id, RegionDTO regionDTO) {
-        return regionRepository.updateRegionById(id, new Region(regionDTO));
+    public List<RegionDTO> getByShortName(String shortName) {
+        List<RegionDTO> regionDTOs = new ArrayList<>();
+        List<Region> regions = regionRepository.getByShortName(shortName);
+
+        for (Region region : regions) {
+            regionDTOs.add(new RegionDTO(region));
+        }
+
+        return regionDTOs;
     }
 
     @Override
-    public int deleteRegionById(String id) {
-        return regionRepository.deleteRegionById(id);
+    public int updateById(String id, RegionDTO regionDTO) {
+        return regionRepository.updateById(id, new Region(regionDTO));
+    }
+
+    @Override
+    public int deleteById(String id) {
+        return regionRepository.deleteById(id);
     }
 }
