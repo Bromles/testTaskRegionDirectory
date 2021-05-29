@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -52,7 +53,7 @@ public class RegionDirectoryController {
     @GetMapping(params = {"name"})
     ResponseEntity<Object> getByName(
             @Pattern(regexp = "[а-яА-Я() -]+",
-                    message = "Region name must contain only Cyrillic, spaces, dashes and brackets")
+                    message = "Region name can't be blank and must contain only Cyrillic, spaces, dashes and brackets")
             @RequestParam String name) throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getByName(name);
 
@@ -62,7 +63,8 @@ public class RegionDirectoryController {
     @GetMapping(params = {"name-beginning"})
     ResponseEntity<Object> getByNameBeginning(
             @Pattern(regexp = "[А-Я][а-я]*",
-                    message = "Beginning of region name must contain only Cyrillic letters and begins with Capital one")
+                    message = "Beginning of region name can't be blank, must contain only Cyrillic letters and " +
+                            "begins with Capital one")
             @RequestParam("name-beginning") String nameBeginning) throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getByNameBeginning(nameBeginning);
 
@@ -71,7 +73,8 @@ public class RegionDirectoryController {
 
     @GetMapping(params = {"short-name"})
     ResponseEntity<Object> getByShortName(
-            @Pattern(regexp = "[А-Я]{3}", message = "Region short name must be 3 Capital Cyrillic letters")
+            @Pattern(regexp = "[А-Я]{3}", message = "Region short name can't be blank and must be 3 Capital Cyrillic" +
+                    " letters")
             @RequestParam("short-name") String shortName) throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getByShortName(shortName);
 
