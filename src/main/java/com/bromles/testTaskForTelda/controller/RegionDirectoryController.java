@@ -9,11 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("v1/regions")
@@ -28,7 +24,7 @@ public class RegionDirectoryController {
     }
 
     @PostMapping
-    RegionDTO addRegion(@Valid @NotNull @RequestBody RegionDTO regionDTO) {
+    RegionDTO addRegion(@Valid @RequestBody RegionDTO regionDTO) {
         return regionDirectoryService.addRegion(regionDTO);
     }
 
