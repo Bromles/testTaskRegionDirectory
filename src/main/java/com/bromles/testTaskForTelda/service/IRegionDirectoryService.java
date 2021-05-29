@@ -14,7 +14,7 @@ public interface IRegionDirectoryService {
 
     List<RegionDTO> getRegionByName(String name);
 
-    RegionDTO updateRegionById(String id, RegionDTO regionDTO);
+    int updateRegionById(String id, RegionDTO regionDTO);
 
     int deleteRegionById(String id);
 }
