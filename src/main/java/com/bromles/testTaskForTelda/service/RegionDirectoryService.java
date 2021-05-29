@@ -3,6 +3,7 @@ package com.bromles.testTaskForTelda.service;
 import com.bromles.testTaskForTelda.entity.Region;
 import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.repository.IRegionRepository;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,20 +20,24 @@ public class RegionDirectoryService implements IRegionDirectoryService {
 
     @Override
     public RegionDTO addRegion(RegionDTO regionDTO) {
-        regionRepository.addRegion(new Region(regionDTO));
-        return regionDTO;
+        try {
+            regionRepository.addRegion(new Region(regionDTO));
+            return regionDTO;
+        } catch (DuplicateKeyException ex) {
+            return null;
+        }
     }
 
     @Override
     public List<RegionDTO> getAll() {
-        List<RegionDTO> regionDTOS = new ArrayList<>();
+        List<RegionDTO> regionDTOs = new ArrayList<>();
         List<Region> regions = regionRepository.getRegions();
 
         for (Region region : regions) {
-            regionDTOS.add(new RegionDTO(region));
+            regionDTOs.add(new RegionDTO(region));
         }
 
-        return regionDTOS;
+        return regionDTOs;
     }
 
     @Override
@@ -49,14 +54,14 @@ public class RegionDirectoryService implements IRegionDirectoryService {
 
     @Override
     public List<RegionDTO> getRegionByName(String name) {
-        List<RegionDTO> regionDTOS = new ArrayList<>();
+        List<RegionDTO> regionDTOs = new ArrayList<>();
         List<Region> regions = regionRepository.getRegionByName(name);
 
         for (Region region : regions) {
-            regionDTOS.add(new RegionDTO(region));
+            regionDTOs.add(new RegionDTO(region));
         }
 
-        return regionDTOS;
+        return regionDTOs;
     }
 
     @Override

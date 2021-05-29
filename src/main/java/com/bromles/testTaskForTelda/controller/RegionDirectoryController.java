@@ -23,8 +23,16 @@ public class RegionDirectoryController {
     }
 
     @PostMapping
-    RegionDTO addRegion(@Valid @RequestBody RegionDTO regionDTO) {
-        return regionDirectoryService.addRegion(regionDTO);
+    ResponseEntity<Object> addRegion(@Valid @RequestBody RegionDTO regionDTO) {
+        RegionDTO result = regionDirectoryService.addRegion(regionDTO);
+
+        if (result != null) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        else {
+            return ExceptionResponseEntityGenerator.generate(HttpStatus.BAD_REQUEST, "message",
+                    "Duplicate id with value '" + regionDTO.id + "'");
+        }
     }
 
     @GetMapping
