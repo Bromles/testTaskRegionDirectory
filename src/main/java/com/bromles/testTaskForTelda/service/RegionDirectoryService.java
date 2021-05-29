@@ -25,7 +25,7 @@ public class RegionDirectoryService implements IRegionDirectoryService {
 
     @Override
     public List<RegionDTO> getAll() {
-        List<RegionDTO> regionDTOS= new ArrayList<>();
+        List<RegionDTO> regionDTOS = new ArrayList<>();
         List<Region> regions = regionRepository.getRegions();
 
         for (Region region : regions) {
@@ -39,7 +39,7 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     public RegionDTO getRegionById(String id) {
         Region region = regionRepository.getRegionById(id);
 
-        if(region != null) {
+        if (region != null) {
             return new RegionDTO(region);
         }
         else {
@@ -49,7 +49,7 @@ public class RegionDirectoryService implements IRegionDirectoryService {
 
     @Override
     public List<RegionDTO> getRegionByName(String name) {
-        List<RegionDTO> regionDTOS= new ArrayList<>();
+        List<RegionDTO> regionDTOS = new ArrayList<>();
         List<Region> regions = regionRepository.getRegionByName(name);
 
         for (Region region : regions) {

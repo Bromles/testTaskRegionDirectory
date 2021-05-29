@@ -3,7 +3,6 @@ package com.bromles.testTaskForTelda.controller;
 import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.exception.ExceptionResponseEntityGenerator;
 import com.bromles.testTaskForTelda.service.IRegionDirectoryService;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +36,8 @@ public class RegionDirectoryController {
             return new ResponseEntity<>(regionDTOs, HttpStatus.OK);
         }
         else {
-            return ExceptionResponseEntityGenerator.generate(HttpStatus.NO_CONTENT,
-                    new ImmutablePair<>("message", "There are no saved regions"));
+            return ExceptionResponseEntityGenerator.generate(HttpStatus.NO_CONTENT, "message",
+                    "There are no saved regions");
         }
     }
 
@@ -51,8 +50,8 @@ public class RegionDirectoryController {
             return new ResponseEntity<>(regionDTOs, HttpStatus.OK);
         }
         else {
-            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND,
-                    new ImmutablePair<>("message", "No regions found by name '" + name + "'"));
+            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND, "message",
+                    "No regions found by name '" + name + "'");
         }
     }
 
@@ -64,8 +63,8 @@ public class RegionDirectoryController {
             return new ResponseEntity<>(regionDTO, HttpStatus.OK);
         }
         else {
-            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND,
-                    new ImmutablePair<>("message", "No regions found by id '" + id + "'"));
+            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND, "message",
+                    "No regions found by id '" + id + "'");
         }
     }
 
