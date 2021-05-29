@@ -3,14 +3,18 @@ package com.bromles.testTaskForTelda.controller;
 import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.exception.ExceptionResponseEntityGenerator;
 import com.bromles.testTaskForTelda.service.IRegionDirectoryService;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-@RestController
+@Controller
 @RequestMapping("v1/regions")
 public class RegionDirectoryController {
 
@@ -76,15 +80,35 @@ public class RegionDirectoryController {
         }
     }
 
-    // TODO add protection
     @PutMapping(idMapping)
-    RegionDTO updateRegion(@Valid @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) {
-        return regionDirectoryService.updateRegionById(id, regionDTO);
+    ResponseEntity<Object> updateRegion(@Valid @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) {
+        int updatedRows = regionDirectoryService.updateRegionById(id, regionDTO);
+
+        if(updatedRows != 0)
+        {
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("rows updated", updatedRows);
+            response.put("value", regionDTO);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        else {
+            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND, "message",
+                    "No regions updated by id '" + id + "'");
+        }
     }
 
-    // TODO add protection
     @DeleteMapping(idMapping)
-    int deleteRegion(@Valid @PathVariable String id) {
-        return regionDirectoryService.deleteRegionById(id);
+    ResponseEntity<Object> deleteRegion(@Valid @PathVariable String id) {
+        int deletedRows = regionDirectoryService.deleteRegionById(id);
+
+        if(deletedRows != 0)
+        {
+            return new ResponseEntity<>(new ImmutablePair<>("rows deleted", deletedRows), HttpStatus.OK);
+        }
+        else {
+            return ExceptionResponseEntityGenerator.generate(HttpStatus.NOT_FOUND, "message",
+                    "No regions deleted by id '" + id + "'");
+        }
     }
 }

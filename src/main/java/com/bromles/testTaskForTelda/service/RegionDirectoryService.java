@@ -65,9 +65,8 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public RegionDTO updateRegionById(String id, RegionDTO regionDTO) {
-        regionRepository.updateRegionById(id, new Region(regionDTO));
-        return regionDTO;
+    public int updateRegionById(String id, RegionDTO regionDTO) {
+        return regionRepository.updateRegionById(id, new Region(regionDTO));
     }
 
     @Override
