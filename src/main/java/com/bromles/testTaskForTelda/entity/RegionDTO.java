@@ -2,6 +2,7 @@ package com.bromles.testTaskForTelda.entity;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.Objects;
 
 public class RegionDTO {
 
@@ -27,5 +28,22 @@ public class RegionDTO {
         this.id = region.getId();
         this.name = region.getName();
         this.shortName = region.getShortName();
+    }
+
+    public RegionDTO() {
+
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        RegionDTO regionDTO = (RegionDTO) obj;
+        return id.equals(regionDTO.id) && name.equals(regionDTO.name) && shortName.equals(regionDTO.shortName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, shortName);
     }
 }

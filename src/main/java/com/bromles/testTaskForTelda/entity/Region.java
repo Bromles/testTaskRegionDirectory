@@ -1,5 +1,7 @@
 package com.bromles.testTaskForTelda.entity;
 
+import java.util.Objects;
+
 public class Region {
 
     private Integer key;
@@ -61,4 +63,16 @@ public class Region {
         this.shortName = shortName;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Region region = (Region) obj;
+        return key.equals(region.key) && id.equals(region.id) && name.equals(region.name) && shortName.equals(region.shortName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, id, name, shortName);
+    }
 }

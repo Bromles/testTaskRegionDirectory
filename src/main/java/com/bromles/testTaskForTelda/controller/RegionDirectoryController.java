@@ -52,8 +52,9 @@ public class RegionDirectoryController {
 
     @GetMapping(params = {"name"})
     ResponseEntity<Object> getByName(
+            @NotBlank(message = "Region name can't be blank")
             @Pattern(regexp = "[а-яА-Я() -]+",
-                    message = "Region name can't be blank and must contain only Cyrillic, spaces, dashes and brackets")
+                    message = "Region name must contain only Cyrillic, spaces, dashes and brackets")
             @RequestParam String name) throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getByName(name);
 
@@ -122,7 +123,7 @@ public class RegionDirectoryController {
         exceptionData.put("timestamp", new Date());
         exceptionData.put("status", HttpStatus.BAD_REQUEST.value());
         exceptionData.put("message", ex.getMessage());
-        exceptionData.put("violated fields", ex.getViolatedFields());
+        exceptionData.put("violated-fields", ex.getViolatedFields());
 
         return ResponseEntity.badRequest().body(exceptionData);
     }
