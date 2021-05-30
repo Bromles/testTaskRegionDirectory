@@ -78,8 +78,19 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    public void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException {
-        int updatedRows = regionRepository.updateById(id, new Region(regionDTO));
+    public void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException, DuplicateUniqueValuesException {
+        int updatedRows;
+
+        try {
+            updatedRows = regionRepository.updateById(id, new Region(regionDTO));
+        }
+        catch (DuplicateKeyException ex) {
+            Map<String, Object> violatedFields = new LinkedHashMap<>();
+
+            violatedFields.put("id", regionDTO.id);
+
+            throw new DuplicateUniqueValuesException(violatedFields);
+        }
 
         if (updatedRows == 0) {
             throw new RecordNotFoundException("id = '" + id + "'");

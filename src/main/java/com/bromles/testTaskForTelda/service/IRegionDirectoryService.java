@@ -20,7 +20,7 @@ public interface IRegionDirectoryService {
 
     List<RegionDTO> getByShortName(String shortName) throws RecordNotFoundException;
 
-    void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException;
+    void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException, DuplicateUniqueValuesException;
 
     void deleteById(String id) throws RecordNotFoundException;
 }

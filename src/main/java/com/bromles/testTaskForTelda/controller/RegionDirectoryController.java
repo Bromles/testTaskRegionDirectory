@@ -74,8 +74,8 @@ public class RegionDirectoryController {
 
     @GetMapping(params = {"short-name"})
     ResponseEntity<Object> getByShortName(
-            @Pattern(regexp = "[А-Я]{3}", message = "Region short name can't be blank and must be 3 Capital Cyrillic" +
-                    " letters")
+            @Pattern(regexp = "[А-Я]{3}",
+                    message = "Region short name can't be blank and must be 3 Capital Cyrillic letters")
             @RequestParam("short-name") String shortName) throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getByShortName(shortName);
 
@@ -96,7 +96,7 @@ public class RegionDirectoryController {
     ResponseEntity<Object> updateById(
             @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
                     message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
-            @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) throws RecordNotFoundException {
+            @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) throws RecordNotFoundException, DuplicateUniqueValuesException {
         regionDirectoryService.updateById(id, regionDTO);
 
         Map<String, Object> response = new LinkedHashMap<>();
