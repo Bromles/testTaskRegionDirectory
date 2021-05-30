@@ -5,13 +5,9 @@ import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
 import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
 import com.bromles.testTaskForTelda.service.IRegionDirectoryService;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Controller
-@RequestMapping("v1/regions")
+@RestController
+@RequestMapping(value = "v1/regions", produces = MediaType.APPLICATION_JSON_VALUE)
 @Validated
 public class RegionDirectoryController {
 
@@ -36,7 +32,7 @@ public class RegionDirectoryController {
         this.regionDirectoryService = regionDirectoryService;
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> add(@Valid @RequestBody RegionDTO regionDTO) throws DuplicateUniqueValuesException {
         regionDirectoryService.add(regionDTO);
 
@@ -96,7 +92,7 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTO);
     }
 
-    @PutMapping(regionIdMapping)
+    @PutMapping(value = regionIdMapping, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> updateById(
             @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
                     message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
@@ -121,6 +117,7 @@ public class RegionDirectoryController {
     }
 
     @ExceptionHandler(DuplicateUniqueValuesException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleDuplicateKeyException(DuplicateUniqueValuesException ex) {
         Map<String, Object> exceptionData = new LinkedHashMap<>();
 
@@ -133,6 +130,7 @@ public class RegionDirectoryController {
     }
 
     @ExceptionHandler(RecordNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleRecordNotFoundException(RecordNotFoundException ex) {
         Map<String, Object> exceptionData = new LinkedHashMap<>();
 
