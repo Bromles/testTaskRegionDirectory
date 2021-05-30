@@ -31,6 +31,10 @@ public class Region {
         this.shortName = regionDTO.shortName;
     }
 
+    public RegionDTO toDTO() {
+        return new RegionDTO(id, name, shortName);
+    }
+
     public Integer getKey() {
         return key;
     }

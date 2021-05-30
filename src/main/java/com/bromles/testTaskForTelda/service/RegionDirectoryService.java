@@ -5,6 +5,10 @@ import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
 import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
 import com.bromles.testTaskForTelda.repository.IRegionRepository;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@CacheConfig(cacheNames={"regionDTOsById"})
 public class RegionDirectoryService implements IRegionDirectoryService {
 
     private final IRegionRepository regionRepository;
@@ -23,6 +28,7 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
+    @CachePut(key = "#root.args[0].id")
     public void add(RegionDTO regionDTO) throws DuplicateUniqueValuesException {
         try {
             regionRepository.save(new Region(regionDTO));
@@ -45,11 +51,12 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
+    @Cacheable
     public RegionDTO getById(String id) throws RecordNotFoundException {
         Region region = regionRepository.getById(id);
 
         if (region != null) {
-            return new RegionDTO(region);
+            return region.toDTO();
         }
         else {
             throw new RecordNotFoundException("id = '" + id + "'");
@@ -78,6 +85,7 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
+    @CachePut(key = "id")
     public void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException, DuplicateUniqueValuesException {
         int updatedRows;
 
@@ -98,6 +106,7 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
+    @CacheEvict(key = "id")
     public void deleteById(String id) throws RecordNotFoundException {
         int deletedRows = regionRepository.deleteById(id);
 
@@ -106,12 +115,14 @@ public class RegionDirectoryService implements IRegionDirectoryService {
         }
     }
 
-    private static List<RegionDTO> convertRegionsToDTOs(List<Region> regions, String... params) throws RecordNotFoundException {
+    private List<RegionDTO> convertRegionsToDTOs(List<Region> regions, String... params) throws RecordNotFoundException {
         if (!regions.isEmpty()) {
             List<RegionDTO> regionDTOs = new ArrayList<>();
 
             for (Region region : regions) {
-                regionDTOs.add(new RegionDTO(region));
+                RegionDTO regionDTO = buildRegionDTOAndCacheIt(region);
+
+                regionDTOs.add(regionDTO);
             }
 
             return regionDTOs;
@@ -132,5 +143,10 @@ public class RegionDirectoryService implements IRegionDirectoryService {
                 }
             }
         }
+    }
+
+    @Cacheable(key = "#root.args[0].id")
+    public RegionDTO buildRegionDTOAndCacheIt(Region region) {
+        return region.toDTO();
     }
 }

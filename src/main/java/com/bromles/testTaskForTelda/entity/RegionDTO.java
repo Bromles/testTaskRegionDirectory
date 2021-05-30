@@ -24,14 +24,7 @@ public class RegionDTO {
         this.shortName = shortName;
     }
 
-    public RegionDTO(Region region) {
-        this.id = region.getId();
-        this.name = region.getName();
-        this.shortName = region.getShortName();
-    }
-
     public RegionDTO() {
-
     }
 
     @Override

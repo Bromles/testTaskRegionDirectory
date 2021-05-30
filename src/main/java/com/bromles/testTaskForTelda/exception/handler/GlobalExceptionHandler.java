@@ -14,11 +14,8 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolationException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.bromles.testTaskForTelda.exception.handler.ExceptionResponseEntityGenerator.generate;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -59,5 +56,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .collect(Collectors.toList());
 
         return generate(HttpStatus.BAD_REQUEST, "errors", errors);
+    }
+
+    private static ResponseEntity<Object> generate(HttpStatus status, String fieldName, Object value) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", status.value());
+        body.put(fieldName, value);
+
+        return ResponseEntity.status(status).body(body);
     }
 }
