@@ -1,18 +1,26 @@
 package com.bromles.testTaskForTelda.service;
 
-import com.bromles.testTaskForTelda.entity.Region;
+import com.bromles.testTaskForTelda.entity.RegionDTO;
+import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
+import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
 
 import java.util.List;
 
 public interface IRegionDirectoryService {
 
-    int addRegion(Region region);
+    void add(RegionDTO regionDTO) throws DuplicateUniqueValuesException;
 
-    List<Region> getAll();
+    List<RegionDTO> getAll() throws RecordNotFoundException;
 
-    Region getRegionById(Integer id);
+    RegionDTO getById(String id) throws RecordNotFoundException;
 
-    int updateRegionById(Integer id, Region region);
+    List<RegionDTO> getByName(String name) throws RecordNotFoundException;
 
-    int deleteRegionById(Integer id);
+    List<RegionDTO> getByNameBeginning(String nameBeginning) throws RecordNotFoundException;
+
+    List<RegionDTO> getByShortName(String shortName) throws RecordNotFoundException;
+
+    void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException, DuplicateUniqueValuesException;
+
+    void deleteById(String id) throws RecordNotFoundException;
 }

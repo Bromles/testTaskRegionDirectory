@@ -1,40 +1,53 @@
 package com.bromles.testTaskForTelda.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
+import java.util.Objects;
 
 public class Region {
 
-    @Positive
-    private Integer id;
+    private Integer key;
 
-    @NotBlank
+    private String id;
+
     private String name;
 
-    @NotBlank
-    // TODO add pattern validation
     private String shortName;
 
-    public Region(Integer id, String name, String shortName) {
+    public Region(Integer key, String id, String name, String shortName) {
+        this.key = key;
         this.id = id;
         this.name = name;
         this.shortName = shortName;
     }
 
-    @Override
-    public String toString() {
-        return "Region{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", shortName='" + shortName + '\'' +
-                '}';
+    public Region(String id, String name, String shortName) {
+        this.id = id;
+        this.name = name;
+        this.shortName = shortName;
     }
 
-    public Integer getId() {
+    public Region(RegionDTO regionDTO) {
+        this.id = regionDTO.id;
+        this.name = regionDTO.name;
+        this.shortName = regionDTO.shortName;
+    }
+
+    public RegionDTO toDTO() {
+        return new RegionDTO(id, name, shortName);
+    }
+
+    public Integer getKey() {
+        return key;
+    }
+
+    public void setKey(Integer key) {
+        this.key = key;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -54,4 +67,16 @@ public class Region {
         this.shortName = shortName;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Region region = (Region) obj;
+        return key.equals(region.key) && id.equals(region.id) && name.equals(region.name) && shortName.equals(region.shortName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, id, name, shortName);
+    }
 }
