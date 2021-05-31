@@ -4,6 +4,14 @@ import com.bromles.testTaskForTelda.entity.RegionDTO;
 import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
 import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
 import com.bromles.testTaskForTelda.service.IRegionDirectoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Region directory", description = "Directory of regions")
 @RestController
 @RequestMapping(value = "v1/regions", produces = MediaType.APPLICATION_JSON_VALUE)
 @Validated
@@ -32,8 +41,18 @@ public class RegionDirectoryController {
         this.regionDirectoryService = regionDirectoryService;
     }
 
+    @Operation(summary = "Add a region")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Region added successfully",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RegionDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid Region supplied", content = @Content)
+    })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> add(@Valid @RequestBody RegionDTO regionDTO) throws DuplicateUniqueValuesException {
+    public ResponseEntity<Object> add(
+            @Parameter(description = "Region to add", required = true,
+                    schema = @Schema(implementation = RegionDTO.class))
+            @Valid @RequestBody RegionDTO regionDTO) throws DuplicateUniqueValuesException {
         regionDirectoryService.add(regionDTO);
 
         Map<String, Object> response = new LinkedHashMap<>();
@@ -43,6 +62,13 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get all regions")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = RegionDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "No regions found", content = @Content)
+    })
     @GetMapping
     public ResponseEntity<Object> getAll() throws RecordNotFoundException {
         List<RegionDTO> regionDTOs = regionDirectoryService.getAll();
@@ -50,8 +76,18 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTOs);
     }
 
+    @Operation(summary = "Get a region by its name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = RegionDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Invalid name of region supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No regions found", content = @Content)
+    })
     @GetMapping(params = {"name"})
     public ResponseEntity<Object> getByName(
+            @Parameter(description = "Name of required region", required = true,
+                    schema = @Schema(implementation = String.class))
             @NotBlank(message = "Region name can't be blank")
             @Pattern(regexp = "[а-яА-Я() -]+",
                     message = "Region name must contain only Cyrillic, spaces, dashes and brackets")
@@ -61,8 +97,19 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTOs);
     }
 
+    @Operation(summary = "Get a region by beginning of its name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = RegionDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Invalid beginning of region name supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "No regions found", content = @Content)
+    })
     @GetMapping(params = {"name-beginning"})
     public ResponseEntity<Object> getByNameBeginning(
+            @Parameter(description = "Beginning of name of required region", required = true,
+                    schema = @Schema(implementation = String.class))
             @Pattern(regexp = "[А-Я][а-я]*",
                     message = "Beginning of region name can't be blank, must contain only Cyrillic letters and " +
                             "begins with Capital one")
@@ -72,8 +119,18 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTOs);
     }
 
+    @Operation(summary = "Get a region by its short name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = RegionDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Invalid short name of region supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No regions found", content = @Content)
+    })
     @GetMapping(params = {"short-name"})
     public ResponseEntity<Object> getByShortName(
+            @Parameter(description = "Short name of required region", required = true,
+                    schema = @Schema(implementation = String.class))
             @Pattern(regexp = "[А-Я]{3}",
                     message = "Region short name can't be blank and must be 3 Capital Cyrillic letters")
             @RequestParam("short-name") String shortName) throws RecordNotFoundException {
@@ -82,8 +139,18 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTOs);
     }
 
+    @Operation(summary = "Get a region by its code")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RegionDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid code of region supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No regions found", content = @Content)
+    })
     @GetMapping(regionIdMapping)
     public ResponseEntity<Object> getById(
+            @Parameter(description = "Code of required region", required = true,
+                    schema = @Schema(implementation = String.class))
             @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
                     message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
             @PathVariable String id) throws RecordNotFoundException {
@@ -92,11 +159,26 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTO);
     }
 
+    @Operation(summary = "Update an existing region by its code")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RegionDTO.class))}),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid region or code of region supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No regions found", content = @Content)
+    })
     @PutMapping(value = regionIdMapping, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> updateById(
+            @Parameter(description = "Code of required region", required = true,
+                    schema = @Schema(implementation = String.class))
             @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
                     message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
-            @PathVariable String id, @Valid @RequestBody RegionDTO regionDTO) throws RecordNotFoundException, DuplicateUniqueValuesException {
+            @PathVariable String id,
+
+            @Parameter(description = "New region data", required = true,
+                    schema = @Schema(implementation = RegionDTO.class))
+            @Valid @RequestBody RegionDTO regionDTO) throws RecordNotFoundException, DuplicateUniqueValuesException {
         regionDirectoryService.updateById(id, regionDTO);
 
         Map<String, Object> response = new LinkedHashMap<>();
@@ -106,8 +188,18 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Delete an existing region by its code")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RegionDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Invalid code of region supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No regions found", content = @Content)
+    })
     @DeleteMapping(regionIdMapping)
     public ResponseEntity<Object> deleteById(
+            @Parameter(description = "Code of required region", required = true,
+                    schema = @Schema(implementation = String.class))
             @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
                     message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
             @PathVariable String id) throws RecordNotFoundException {

@@ -1,20 +1,26 @@
 package com.bromles.testTaskForTelda.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
+@Schema(name = "Region", description = "Region")
 public class RegionDTO {
 
+    @Schema(name = "id", description = "Code of region", example = "35")
     @NotBlank(message = "Region code cannot be blank")
     @Pattern(regexp = ("([0-9]{2}[1-9])|([0-9][1-9][0-9])|([1-9][0-9]{2})|([0-9][1-9])|([1-9][0-9])"),
             message = "Region id must be 2 or 3 digits and mustn't contain only zeros")
     public String id;
 
+    @Schema(name = "name", description = "Name of region", example = "Вологодская область")
     @NotBlank(message = "Region name cannot be blank")
     @Pattern(regexp = "[а-яА-Я() -]+", message = "Region name must contain only Cyrillic, spaces, dashes and brackets")
     public String name;
 
+    @Schema(name = "short name", description = "Short name of region", example = "ВОЛ")
     @Pattern(regexp = "[А-Я]{3}", message = "Region short name must be 3 capital Cyrillic letters")
     public String shortName;
 
