@@ -85,7 +85,7 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    @CachePut(key = "id")
+    @CachePut(key = "#root.args[0]")
     public void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException, DuplicateUniqueValuesException {
         int updatedRows;
 
