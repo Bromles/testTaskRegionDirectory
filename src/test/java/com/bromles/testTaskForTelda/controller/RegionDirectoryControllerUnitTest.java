@@ -104,7 +104,22 @@ public class RegionDirectoryControllerUnitTest {
     }
 
     @Test
-    public void getAll_GetNothing_ReturnJsonArray() throws Exception {
+    public void add_PostPlainText_ReturnStatusUnsupportedMediaType_andReturnErrorMessage() throws Exception {
+        RegionDTO regionDTO = new RegionDTO("78", "город Москва", "МСК");
+
+        String requestBody = objectMapper.writeValueAsString(regionDTO);
+
+        mvc.perform(
+                post(v1RegionsMapping)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(requestBody))
+                .andExpect(status().isUnsupportedMediaType())
+                .andExpect(jsonPath("$.status", is(415)))
+                .andExpect(jsonPath("$.message", is("Server supports only application/json")));
+    }
+
+    @Test
+    public void getAll_GetNothing_ReturnStatusOk_andReturnRegionDTOs() throws Exception {
         RegionDTO regionDTO = new RegionDTO("78", "город Москва", "МСК");
 
         List<RegionDTO> allRegions = Collections.singletonList(regionDTO);
@@ -481,6 +496,22 @@ public class RegionDirectoryControllerUnitTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status", is(404)))
                 .andExpect(jsonPath("$.message", is("No records found by id = '" + id + "'")));
+    }
+
+    @Test
+    public void updateById_UpdateValidIdAndPlainText_ReturnStatusUnsupportedMediaType_andReturnErrorMessage() throws Exception {
+        String id = "10";
+        RegionDTO regionDTO = new RegionDTO("78", "город Москва", "МСК");
+
+        String requestBody = objectMapper.writeValueAsString(regionDTO);
+
+        mvc.perform(
+                put(v1RegionsMapping + "/" + id)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(requestBody))
+                .andExpect(status().isUnsupportedMediaType())
+                .andExpect(jsonPath("$.status", is(415)))
+                .andExpect(jsonPath("$.message", is("Server supports only application/json")));
     }
 
     @Test
