@@ -12,19 +12,19 @@ public interface IRegionRepository {
     @Options(useGeneratedKeys = true, keyProperty = "key", keyColumn = "key")
     void save(Region region);
 
-    @Select("SELECT key, id, name, short_name FROM regions")
+    @Select("SELECT key, id, name, short_name FROM regions ORDER BY name")
     List<Region> getAll();
 
     @Select("SELECT key, id, name, short_name FROM regions WHERE id = #{id}")
     Region getById(String id);
 
-    @Select("SELECT key, id, name, short_name FROM regions WHERE name = #{name}")
+    @Select("SELECT key, id, name, short_name FROM regions WHERE name = #{name} ORDER BY name")
     List<Region> getByName(String name);
 
-    @Select("SELECT key, id, name, short_name FROM regions WHERE name LIKE '${nameBeginning}%'")
+    @Select("SELECT key, id, name, short_name FROM regions WHERE name LIKE '${nameBeginning}%' ORDER BY name")
     List<Region> getByNameBeginning(String nameBeginning);
 
-    @Select("SELECT key, id, name, short_name FROM regions WHERE short_name = #{shortName}")
+    @Select("SELECT key, id, name, short_name FROM regions WHERE short_name = #{shortName} ORDER BY name")
     List<Region> getByShortName(String shortName);
 
     @Update("UPDATE regions set id = #{region.id}, name = #{region.name}, short_name = #{region.shortName} " +
