@@ -106,7 +106,7 @@ public class RegionDirectoryService implements IRegionDirectoryService {
     }
 
     @Override
-    @CacheEvict(key = "id")
+    @CacheEvict(key = "#root.args[0]")
     public void deleteById(String id) throws RecordNotFoundException {
         int deletedRows = regionRepository.deleteById(id);
 
