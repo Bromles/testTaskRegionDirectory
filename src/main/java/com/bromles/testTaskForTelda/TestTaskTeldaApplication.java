@@ -13,7 +13,7 @@ import org.springframework.cache.annotation.EnableCaching;
                 title = "Region dictionary",
                 version = "1.0",
                 description = "Dictionary of regions",
-                contact = @Contact(url = "https://github.com/Bromles", name = "Bromles")
+                contact = @Contact(url = "https://github.com/Bromles", name = "Alexandr Ushakov")
         )
 )
 @SpringBootApplication
