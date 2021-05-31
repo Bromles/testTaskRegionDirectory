@@ -26,6 +26,7 @@
 *   JUnit 4
 *   Mockito
 *   SpringDoc
+*   Swagger UI
 
 ### Ссылки на работающее приложение и документацию
 
