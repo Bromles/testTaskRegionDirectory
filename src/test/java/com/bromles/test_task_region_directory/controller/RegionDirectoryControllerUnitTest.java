@@ -1,9 +1,9 @@
-package com.bromles.testTaskForTelda.controller;
+package com.bromles.test_task_region_directory.controller;
 
-import com.bromles.testTaskForTelda.entity.RegionDTO;
-import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
-import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
-import com.bromles.testTaskForTelda.service.RegionDirectoryService;
+import com.bromles.test_task_region_directory.entity.RegionDTO;
+import com.bromles.test_task_region_directory.exception.DuplicateUniqueValuesException;
+import com.bromles.test_task_region_directory.exception.RecordNotFoundException;
+import com.bromles.test_task_region_directory.service.RegionDirectoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;

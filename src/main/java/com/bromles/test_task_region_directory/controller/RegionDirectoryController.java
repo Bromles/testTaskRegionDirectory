@@ -1,11 +1,11 @@
-package com.bromles.testTaskForTelda.controller;
+package com.bromles.test_task_region_directory.controller;
 
-import com.bromles.testTaskForTelda.controller.schema.SuccessfullyAddedOrUpdatedResponse;
-import com.bromles.testTaskForTelda.controller.schema.SuccessfullyDeletedResponse;
-import com.bromles.testTaskForTelda.entity.RegionDTO;
-import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
-import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
-import com.bromles.testTaskForTelda.service.IRegionDirectoryService;
+import com.bromles.test_task_region_directory.controller.schema.SuccessfullyAddedOrUpdatedResponse;
+import com.bromles.test_task_region_directory.controller.schema.SuccessfullyDeletedResponse;
+import com.bromles.test_task_region_directory.entity.RegionDTO;
+import com.bromles.test_task_region_directory.exception.DuplicateUniqueValuesException;
+import com.bromles.test_task_region_directory.exception.RecordNotFoundException;
+import com.bromles.test_task_region_directory.service.IRegionDirectoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

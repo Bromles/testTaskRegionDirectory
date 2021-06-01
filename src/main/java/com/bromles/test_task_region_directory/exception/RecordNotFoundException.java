@@ -1,4 +1,4 @@
-package com.bromles.testTaskForTelda.exception;
+package com.bromles.test_task_region_directory.exception;
 
 public class RecordNotFoundException extends Exception {
     private final String fieldName;

@@ -1,4 +1,4 @@
-package com.bromles.testTaskForTelda.exception;
+package com.bromles.test_task_region_directory.exception;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.bromles.testTaskForTelda;
+package com.bromles.test_task_region_directory;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -18,10 +18,10 @@ import org.springframework.cache.annotation.EnableCaching;
 )
 @SpringBootApplication
 @EnableCaching
-public class TestTaskTeldaApplication {
+public class TestTaskApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TestTaskTeldaApplication.class, args);
+        SpringApplication.run(TestTaskApplication.class, args);
     }
 
 }

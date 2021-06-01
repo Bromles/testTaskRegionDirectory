@@ -1,4 +1,4 @@
-package com.bromles.testTaskForTelda.entity;
+package com.bromles.test_task_region_directory.entity;
 
 import java.util.Objects;
 

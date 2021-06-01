@@ -1,6 +1,6 @@
-package com.bromles.testTaskForTelda.controller.schema;
+package com.bromles.test_task_region_directory.controller.schema;
 
-import com.bromles.testTaskForTelda.entity.RegionDTO;
+import com.bromles.test_task_region_directory.entity.RegionDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "Successfully added or updated", description = "Region successfully added or updated")

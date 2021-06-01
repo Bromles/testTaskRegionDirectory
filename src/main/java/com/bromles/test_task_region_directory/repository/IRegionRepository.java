@@ -1,6 +1,6 @@
-package com.bromles.testTaskForTelda.repository;
+package com.bromles.test_task_region_directory.repository;
 
-import com.bromles.testTaskForTelda.entity.Region;
+import com.bromles.test_task_region_directory.entity.Region;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

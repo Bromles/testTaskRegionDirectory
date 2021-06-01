@@ -11,15 +11,15 @@
     </parent>
 
     <groupId>com.bromles</groupId>
-    <artifactId>testTaskTelda</artifactId>
+    <artifactId>testTaskRegionDirectory</artifactId>
     <version>1.0</version>
-    <name>testTaskForTelda</name>
+    <name>testTaskRegionDirectory</name>
 
     <description>Region dictionary</description>
 
     <properties>
         <java.version>11</java.version>
-        <start-class>com.bromles.testTaskForTelda.TestTaskTeldaApplication</start-class>
+        <start-class>com.bromles.test_task_region_directory.TestTaskApplication</start-class>
     </properties>
 
     <dependencies>

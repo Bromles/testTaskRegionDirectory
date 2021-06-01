@@ -1,10 +1,10 @@
-package com.bromles.testTaskForTelda.service;
+package com.bromles.test_task_region_directory.service;
 
-import com.bromles.testTaskForTelda.entity.Region;
-import com.bromles.testTaskForTelda.entity.RegionDTO;
-import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
-import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
-import com.bromles.testTaskForTelda.repository.IRegionRepository;
+import com.bromles.test_task_region_directory.entity.Region;
+import com.bromles.test_task_region_directory.entity.RegionDTO;
+import com.bromles.test_task_region_directory.exception.DuplicateUniqueValuesException;
+import com.bromles.test_task_region_directory.exception.RecordNotFoundException;
+import com.bromles.test_task_region_directory.repository.IRegionRepository;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;

@@ -1,8 +1,8 @@
-package com.bromles.testTaskForTelda.service;
+package com.bromles.test_task_region_directory.service;
 
-import com.bromles.testTaskForTelda.entity.RegionDTO;
-import com.bromles.testTaskForTelda.exception.DuplicateUniqueValuesException;
-import com.bromles.testTaskForTelda.exception.RecordNotFoundException;
+import com.bromles.test_task_region_directory.entity.RegionDTO;
+import com.bromles.test_task_region_directory.exception.DuplicateUniqueValuesException;
+import com.bromles.test_task_region_directory.exception.RecordNotFoundException;
 
 import java.util.List;
 

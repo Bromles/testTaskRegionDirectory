@@ -1,4 +1,4 @@
-package com.bromles.testTaskForTelda.exception.handler;
+package com.bromles.test_task_region_directory.exception.handler;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

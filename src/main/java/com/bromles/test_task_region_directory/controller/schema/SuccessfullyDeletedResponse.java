@@ -1,4 +1,4 @@
-package com.bromles.testTaskForTelda.controller.schema;
+package com.bromles.test_task_region_directory.controller.schema;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
