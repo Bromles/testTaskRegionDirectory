@@ -81,9 +81,11 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
+                    <locale>ru_RU</locale>
                     <source>${java.version}</source>
                     <reportOutputDirectory>src/main/resources/static/</reportOutputDirectory>
                     <destDir>javadoc</destDir>
+                    <excludePackageNames>com.bromles.test_task_region_directory.controller.schema</excludePackageNames>
                 </configuration>
             </plugin>
         </plugins>

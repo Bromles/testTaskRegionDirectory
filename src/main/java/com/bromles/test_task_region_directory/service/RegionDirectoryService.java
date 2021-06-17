@@ -17,8 +17,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Сервис справочника регионов
+ */
+
 @Service
-@CacheConfig(cacheNames={"regionDTOsById"})
+@CacheConfig(cacheNames = {"regionDTOsById"})
 public class RegionDirectoryService implements IRegionDirectoryService {
 
     private final IRegionRepository regionRepository;
@@ -27,11 +31,6 @@ public class RegionDirectoryService implements IRegionDirectoryService {
         this.regionRepository = regionRepository;
     }
 
-    /**
-     *
-     * @param regionDTO realization
-     * @throws DuplicateUniqueValuesException
-     */
     @Override
     @CachePut(key = "#root.args[0].id")
     public void add(RegionDTO regionDTO) throws DuplicateUniqueValuesException {
@@ -120,6 +119,16 @@ public class RegionDirectoryService implements IRegionDirectoryService {
         }
     }
 
+    /**
+     * Конвертирует сущности в объекты трансфера данных
+     *
+     * @param regions Тип: List<Region>. Список регионов для конвертации
+     * @param params  Тип: varargs<String>. Дополнительные параметры для генерации исключения
+     * @return Возвращает список объектов трансфера данных, конвертированный из данного списка сущностей
+     * @throws RecordNotFoundException Исключение, генерируемое при отсутствии в репозитории региона с искомыми
+     *                                 параметрами
+     */
+
     private List<RegionDTO> convertRegionsToDTOs(List<Region> regions, String... params) throws RecordNotFoundException {
         if (!regions.isEmpty()) {
             List<RegionDTO> regionDTOs = new ArrayList<>();
@@ -149,6 +158,13 @@ public class RegionDirectoryService implements IRegionDirectoryService {
             }
         }
     }
+
+    /**
+     * Генерирует объект трансфера данных на основе сущности
+     *
+     * @param region Тип: Region. Сущность для конвертации
+     * @return Возвращает сгенерированный объект трансфера данных
+     */
 
     @Cacheable(key = "#root.args[0].id")
     public RegionDTO buildRegionDTOAndCacheIt(Region region) {
