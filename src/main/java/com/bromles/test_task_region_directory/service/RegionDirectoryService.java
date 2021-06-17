@@ -27,6 +27,11 @@ public class RegionDirectoryService implements IRegionDirectoryService {
         this.regionRepository = regionRepository;
     }
 
+    /**
+     *
+     * @param regionDTO realization
+     * @throws DuplicateUniqueValuesException
+     */
     @Override
     @CachePut(key = "#root.args[0].id")
     public void add(RegionDTO regionDTO) throws DuplicateUniqueValuesException {

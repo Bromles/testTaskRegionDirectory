@@ -35,7 +35,6 @@ import java.util.Map;
 @RequestMapping(value = "v1/regions", produces = MediaType.APPLICATION_JSON_VALUE)
 @Validated
 public class RegionDirectoryController {
-
     private final IRegionDirectoryService regionDirectoryService;
 
     private final String regionIdMapping = "/{id}";

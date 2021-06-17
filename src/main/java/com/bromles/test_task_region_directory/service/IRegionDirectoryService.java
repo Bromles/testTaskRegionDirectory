@@ -8,19 +8,57 @@ import java.util.List;
 
 public interface IRegionDirectoryService {
 
+    /**
+     * @param regionDTO interface
+     * @throws DuplicateUniqueValuesException
+     */
     void add(RegionDTO regionDTO) throws DuplicateUniqueValuesException;
 
+    /**
+     * @return
+     * @throws RecordNotFoundException
+     */
     List<RegionDTO> getAll() throws RecordNotFoundException;
 
+    /**
+     * @param id
+     * @return
+     * @throws RecordNotFoundException
+     */
     RegionDTO getById(String id) throws RecordNotFoundException;
 
+    /**
+     * @param name
+     * @return
+     * @throws RecordNotFoundException
+     */
     List<RegionDTO> getByName(String name) throws RecordNotFoundException;
 
+    /**
+     * @param nameBeginning
+     * @return
+     * @throws RecordNotFoundException
+     */
     List<RegionDTO> getByNameBeginning(String nameBeginning) throws RecordNotFoundException;
 
+    /**
+     * @param shortName
+     * @return
+     * @throws RecordNotFoundException
+     */
     List<RegionDTO> getByShortName(String shortName) throws RecordNotFoundException;
 
+    /**
+     * @param id
+     * @param regionDTO
+     * @throws RecordNotFoundException
+     * @throws DuplicateUniqueValuesException
+     */
     void updateById(String id, RegionDTO regionDTO) throws RecordNotFoundException, DuplicateUniqueValuesException;
 
+    /**
+     * @param id
+     * @throws RecordNotFoundException
+     */
     void deleteById(String id) throws RecordNotFoundException;
 }
