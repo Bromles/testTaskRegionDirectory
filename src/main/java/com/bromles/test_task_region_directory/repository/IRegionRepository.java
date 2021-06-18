@@ -14,7 +14,7 @@ public interface IRegionRepository {
     /**
      * Добавляет регион в репозиторий
      *
-     * @param region Тип: Region. Сущность для добавления
+     * @param region Тип: {@link Region}. Сущность для добавления
      */
     @Insert("INSERT INTO regions (id, name, short_name) VALUES (#{id}, #{name}, #{shortName})")
     @Options(useGeneratedKeys = true, keyProperty = "key", keyColumn = "key")
@@ -31,7 +31,7 @@ public interface IRegionRepository {
     /**
      * Получает регион по идентификатору
      *
-     * @param id Тип: String. Идентификатор региона, по которому осуществляется поиск
+     * @param id Тип: {@link String}. Идентификатор региона, по которому осуществляется поиск
      * @return Возвращает регион
      */
     @Select("SELECT key, id, name, short_name FROM regions WHERE id = #{id}")
@@ -40,7 +40,7 @@ public interface IRegionRepository {
     /**
      * Получает список регионов по наименованию
      *
-     * @param name Тип: String. Наименование региона, по которому осуществляется поиск
+     * @param name Тип: {@link String}. Наименование региона, по которому осуществляется поиск
      * @return Возвращает список регионов
      */
     @Select("SELECT key, id, name, short_name FROM regions WHERE name = #{name} ORDER BY name")
@@ -49,7 +49,7 @@ public interface IRegionRepository {
     /**
      * Получает список регионов по началу наименования
      *
-     * @param nameBeginning Тип: String. Начало наименования региона, по которому осуществляется поиск
+     * @param nameBeginning Тип: {@link String}. Начало наименования региона, по которому осуществляется поиск
      * @return Возвращает список регионов
      */
     @Select("SELECT key, id, name, short_name FROM regions WHERE name LIKE '${nameBeginning}%' ORDER BY name")
@@ -58,7 +58,7 @@ public interface IRegionRepository {
     /**
      * Получает список регионов по сокращенному наименованию
      *
-     * @param shortName Тип: String. Сокращенное наименование региона, по которому осуществляется поиск
+     * @param shortName Тип: {@link String}. Сокращенное наименование региона, по которому осуществляется поиск
      * @return Возвращает список регионов
      */
     @Select("SELECT key, id, name, short_name FROM regions WHERE short_name = #{shortName} ORDER BY name")
@@ -67,8 +67,8 @@ public interface IRegionRepository {
     /**
      * Обновляет регион по идентификатору
      *
-     * @param id Тип: String. Идентификатор, по которому осуществляется поиск региона в репозитории для обновления
-     * @param region Тип: Region. Сущность, заменяющая данные
+     * @param id Тип: {@link String}. Идентификатор, по которому осуществляется поиск региона в репозитории для обновления
+     * @param region Тип: {@link Region}. Сущность, заменяющая данные
      * @return Возвращает количество обновленных записей
      */
     @Update("UPDATE regions set id = #{region.id}, name = #{region.name}, short_name = #{region.shortName} " +
@@ -78,7 +78,7 @@ public interface IRegionRepository {
     /**
      * Удаляет регион по идентификатору
      *
-     * @param id Тип: String. Идентификатор, по которому осуществляется поиск региона для удаления
+     * @param id Тип: {@link String}. Идентификатор, по которому осуществляется поиск региона для удаления
      * @return Возвращает количество удаленных записей
      */
     @Delete("DELETE FROM regions WHERE id = #{id}")

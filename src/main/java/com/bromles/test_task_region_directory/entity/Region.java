@@ -30,10 +30,10 @@ public class Region {
     /**
      * Конструктор сущности региона со всеми параметрами
      *
-     * @param key Тип: Integer. Первичный ключ записи региона
-     * @param id Тип: String. Идентификатор региона
-     * @param name Тип: String. Наименование региона
-     * @param shortName Тип: String. Сокращенное наименование региона
+     * @param key Тип: {@link Integer}. Первичный ключ записи региона
+     * @param id Тип: {@link String}. Идентификатор региона
+     * @param name Тип: {@link String}. Наименование региона
+     * @param shortName Тип: {@link String}. Сокращенное наименование региона
      */
     public Region(Integer key, String id, String name, String shortName) {
         this.key = key;
@@ -45,9 +45,9 @@ public class Region {
     /**
      * Конструктор сущности региона со всеми параметрами, кроме первичного ключа
      *
-     * @param id Тип: String. Идентификатор региона
-     * @param name Тип: String. Наименование региона
-     * @param shortName Тип: String. Сокращенное наименование региона
+     * @param id Тип: {@link String}. Идентификатор региона
+     * @param name Тип: {@link String}. Наименование региона
+     * @param shortName Тип: {@link String}. Сокращенное наименование региона
      */
     public Region(String id, String name, String shortName) {
         this.id = id;
@@ -58,7 +58,7 @@ public class Region {
     /**
      * Конструктор сущности региона по объекту трансфера данных
      *
-     * @param regionDTO Тип: regionDTO. Объект трансфера данных, на основе которого создается сущность региона
+     * @param regionDTO Тип: {@link RegionDTO}. Объект трансфера данных, на основе которого создается сущность региона
      */
     public Region(RegionDTO regionDTO) {
         this.id = regionDTO.id;
@@ -88,7 +88,7 @@ public class Region {
     /**
      * Сохраняет значение первичного ключа в сущности
      *
-     * @param key Тип: Integer. Первичный ключ записи региона
+     * @param key Тип: {@link Integer}. Первичный ключ записи региона
      * @see #getKey()
      */
     public void setKey(Integer key) {
@@ -108,7 +108,7 @@ public class Region {
     /**
      * Сохраняет значение идентификатора в сущности
      *
-     * @param id Тип: String. Идентификатор региона
+     * @param id Тип: {@link String}. Идентификатор региона
      * @see #getId()
      */
     public void setId(String id) {
@@ -128,7 +128,7 @@ public class Region {
     /**
      * Сохраняет значение наименования в сущности
      *
-     * @param name Тип: String. Наименование региона
+     * @param name Тип: {@link String}. Наименование региона
      * @see #getName()
      */
     public void setName(String name) {
@@ -148,7 +148,7 @@ public class Region {
     /**
      * Сохраняет значение сокращенного наименования в сущности
      *
-     * @param shortName Тип: String. Сокращенное наименование региона
+     * @param shortName Тип: {@link String}. Сокращенное наименование региона
      * @see #getShortName()
      */
     public void setShortName(String shortName) {

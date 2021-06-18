@@ -48,9 +48,9 @@ public class RegionDTO {
     /**
      * Конструктор объекта трансфера данных со всеми параметрами
      *
-     * @param id        Тип: String. Идентификатор региона
-     * @param name      Тип: String. Наименование региона
-     * @param shortName Тип: String. Сокращенное наименование региона
+     * @param id        Тип: {@link String}. Идентификатор региона
+     * @param name      Тип: {@link String}. Наименование региона
+     * @param shortName Тип: {@link String}. Сокращенное наименование региона
      */
     public RegionDTO(String id, String name, String shortName) {
         this.id = id;

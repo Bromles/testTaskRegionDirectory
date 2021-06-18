@@ -28,10 +28,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Обрабатывает исключение, генерируемое при невозможности конвертировать параметр запроса в требуемый тип
      *
-     * @param ex Тип: TypeMismatchException. Перехваченное исключение
-     * @param headers Тип: HttpHeaders. Заголовки HTTP-запроса, вызвавшего исключение
-     * @param status Тип: HttpStatus. Статус HTTP-запроса, вызвавшего исключение
-     * @param request Тип: WebRequest. HTTP-запрос, вызвавший исключение
+     * @param ex Тип: {@link TypeMismatchException}. Перехваченное исключение
+     * @param headers Тип: {@link HttpHeaders}. Заголовки HTTP-запроса, вызвавшего исключение
+     * @param status Тип: {@link HttpStatus}. Статус HTTP-запроса, вызвавшего исключение
+     * @param request Тип: {@link WebRequest}. HTTP-запрос, вызвавший исключение
      * @return Возвращает сущность ответа сервера, содержащую статус 400 и сообщение об ошибке
      */
     @Override
@@ -45,10 +45,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Обрабатывает исключение, генерируемое при получении запроса с некорректным JSON в теле
      *
-     * @param ex Тип: HttpMessageNotReadableException. Перехваченное исключение
-     * @param headers Тип: HttpHeaders. Заголовки HTTP-запроса, вызвавшего исключение
-     * @param status Тип: HttpStatus. Статус HTTP-запроса, вызвавшего исключение
-     * @param request Тип: WebRequest. HTTP-запрос, вызвавший исключение
+     * @param ex Тип: {@link HttpMessageNotReadableException}. Перехваченное исключение
+     * @param headers Тип: {@link HttpHeaders}. Заголовки HTTP-запроса, вызвавшего исключение
+     * @param status Тип: {@link HttpStatus}. Статус HTTP-запроса, вызвавшего исключение
+     * @param request Тип: {@link WebRequest}. HTTP-запрос, вызвавший исключение
      * @return Возвращает сущность ответа сервера, содержащую статус 400 и сообщение об ошибке
      */
     @Override
@@ -60,10 +60,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Обрабатывает исключение, генерируемое при провале валидации входных объектов трансфера данных
      *
-     * @param ex Тип: MethodArgumentNotValidException. Перехваченное исключение
-     * @param headers Тип: HttpHeaders. Заголовки HTTP-запроса, вызвавшего исключение
-     * @param status Тип: HttpStatus. Статус HTTP-запроса, вызвавшего исключение
-     * @param request Тип: WebRequest. HTTP-запрос, вызвавший исключение
+     * @param ex Тип: {@link MethodArgumentNotValidException}. Перехваченное исключение
+     * @param headers Тип: {@link HttpHeaders}. Заголовки HTTP-запроса, вызвавшего исключение
+     * @param status Тип: {@link HttpStatus}. Статус HTTP-запроса, вызвавшего исключение
+     * @param request Тип: {@link WebRequest}. HTTP-запрос, вызвавший исключение
      * @return Возвращает сущность ответа сервера, содержащую статус 400 и сообщение об ошибке
      */
     @Override
@@ -81,10 +81,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Обрабатывает исключение, генерируемое при получении запроса с неверным типом содержимого
      *
-     * @param ex Тип: HttpMediaTypeNotSupportedException. Перехваченное исключение
-     * @param headers Тип: HttpHeaders. Заголовки HTTP-запроса, вызвавшего исключение
-     * @param status Тип: HttpStatus. Статус HTTP-запроса, вызвавшего исключение
-     * @param request Тип: WebRequest. HTTP-запрос, вызвавший исключение
+     * @param ex Тип: {@link HttpMediaTypeNotSupportedException}. Перехваченное исключение
+     * @param headers Тип: {@link HttpHeaders}. Заголовки HTTP-запроса, вызвавшего исключение
+     * @param status Тип: {@link HttpStatus}. Статус HTTP-запроса, вызвавшего исключение
+     * @param request Тип: {@link WebRequest}. HTTP-запрос, вызвавший исключение
      * @return Возвращает сущность ответа сервера, содержащую статус 415 и сообщение об ошибке
      */
     @Override
@@ -96,10 +96,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Обрабатывает исключение, генерируемое при отсутствии подходящего обработчика для некоторого исключения
      *
-     * @param ex Тип: NoHandlerFoundException. Перехваченное исключение
-     * @param headers Тип: HttpHeaders. Заголовки HTTP-запроса, вызвавшего исключение
-     * @param status Тип: HttpStatus. Статус HTTP-запроса, вызвавшего исключение
-     * @param request Тип: WebRequest. HTTP-запрос, вызвавший исключение
+     * @param ex Тип: {@link NoHandlerFoundException}. Перехваченное исключение
+     * @param headers Тип: {@link HttpHeaders}. Заголовки HTTP-запроса, вызвавшего исключение
+     * @param status Тип: {@link HttpStatus}. Статус HTTP-запроса, вызвавшего исключение
+     * @param request Тип: {@link WebRequest}. HTTP-запрос, вызвавший исключение
      * @return Возвращает сущность ответа сервера, содержащую статус 500 и сообщение об ошибке
      */
     @Override
@@ -112,7 +112,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * Обрабатывает исключение, генерируемое при провале валидации входных параметров, не являющихся объектами
      * трансфера данных
      *
-     * @param ex Тип: ConstraintViolationException. Перехваченное исключение
+     * @param ex Тип: {@link ConstraintViolationException}. Перехваченное исключение
      * @return Возвращает сущность ответа сервера, содержащую статус 400 и сообщение об ошибке
      */
     @ExceptionHandler(ConstraintViolationException.class)
@@ -129,9 +129,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Генерирует сущность ответа сервера, , содержащую HTTP-статус и сообщение об ошибке
      *
-     * @param status Тип: HttpStatus. Статус генерируемого ответа сервера
-     * @param fieldName Тип: String. Название поля с информацией об ошибке в теле ответа
-     * @param value Тип: Object. Значение поля с информацией об ошибке в теле ответа
+     * @param status Тип: {@link HttpStatus}. Статус генерируемого ответа сервера
+     * @param fieldName Тип: {@link String}. Название поля с информацией об ошибке в теле ответа
+     * @param value Тип: {@link Object}. Значение поля с информацией об ошибке в теле ответа
      * @return Возвращает сущность ответа сервера, содержащую HTTP-статус и сообщение об ошибке
      */
     private static ResponseEntity<Object> generate(HttpStatus status, String fieldName, Object value) {

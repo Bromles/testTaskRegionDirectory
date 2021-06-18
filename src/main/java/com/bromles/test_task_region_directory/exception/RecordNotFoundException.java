@@ -9,7 +9,7 @@ public class RecordNotFoundException extends Exception {
     /**
      * Конструктор, генерирующий исключение на основе названия поля, по которому осуществлялся поиск
      *
-     * @param fieldName Тип: String. Название поля, по которому осуществлялся поиск
+     * @param fieldName Тип: {@link String}. Название поля, по которому осуществлялся поиск
      */
     public RecordNotFoundException(String fieldName) {
         this.fieldName = fieldName;

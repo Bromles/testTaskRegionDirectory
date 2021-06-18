@@ -30,6 +30,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Контроллер API справочника регионов
+ */
 @Tag(name = "Region directory", description = "Directory of regions")
 @RestController
 @RequestMapping(value = "v1/regions", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,6 +46,15 @@ public class RegionDirectoryController {
         this.regionDirectoryService = regionDirectoryService;
     }
 
+    /**
+     * Эндпоинт POST-запросов для добавления нового региона в справочник
+     *
+     * @param regionDTO Тип: {@link RegionDTO}. Объект трансфера данных для добавления в справочник
+     * @return Возвращает сущность ответа сервера, содержащую статус 200, статус успешности добавления и само
+     * добавленное значение
+     * @throws DuplicateUniqueValuesException Исключение, генерируемое при попытке добавить в справочник объект
+     *                                        трансфера данных, нарушающий уникальность некоторых полей
+     */
     @Operation(summary = "Add a region")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Region added successfully",
@@ -64,6 +76,12 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Эндпоинт GET-запросов для получения списка всех регионов
+     *
+     * @return Возвращает сущность ответа сервера, содержащую код 200 и список регионов
+     * @throws RecordNotFoundException Исключение, генерируемое при отсутствии сохраненных регионов в справочнике
+     */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(mediaType = "application/json",
@@ -77,6 +95,15 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTOs);
     }
 
+    /**
+     * Эндпоинт GET-запросов для получения списка регионов по наименованию
+     *
+     * @param name Тип: {@link String}. Наименование региона, по которому осуществляется поиск. Должен состоять только из
+     *             кириллических букв, пробелов, дефисов и скобок
+     * @return Возвращает сущность ответа сервера, содержащую статус 200 и список найденных регионов
+     * @throws RecordNotFoundException Исключение, генерируемое при отсутствии в справочнике сохраненных регионов с
+     *                                 данным наименованием
+     */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(mediaType = "application/json",
@@ -97,6 +124,15 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTOs);
     }
 
+    /**
+     * Эндпоинт GET-запросов для получения списка регионов по началу наименования
+     *
+     * @param nameBeginning Тип: {@link String}. Начало наименования региона, по которому осуществляется поиск.
+     *                      Состоит из кириллических букв и начинается с заглавной
+     * @return Возвращает сущность ответа сервера, содержащую статус 200 и список найденных регионов
+     * @throws RecordNotFoundException Исключение, генерируемое при отсутствии в справочнике сохраненных регионов с
+     *                                 наименованием, начало которого совпадает с данным
+     */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(mediaType = "application/json",
@@ -118,6 +154,15 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTOs);
     }
 
+    /**
+     * Эндпоинт GET-запросов для получения списка регионов по сокращенному наименованию
+     *
+     * @param shortName Тип: {@link String}. Сокращенное наименование, по которому осуществляется поиск. Состоит из трех
+     *                  заглавных кириллических букв
+     * @return Возвращает сущность ответа сервера, содержащую статус 200 и список найденных регионов
+     * @throws RecordNotFoundException Исключение, генерируемое при отсутствии в справочнике сохраненных регионов с
+     *                                 данным сокращенным наименованием
+     */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(mediaType = "application/json",
@@ -136,6 +181,15 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTOs);
     }
 
+    /**
+     * Эндпоинт GET-запросов для получения региона по идентификатору
+     *
+     * @param id Тип: {@link String}. Идентификатор региона, по которому осуществляется поиск. Состоит из 2 или 3 цифр и не
+     *           может состоять только из нулей
+     * @return Возвращает сущность ответа сервера, содержащую статус 200 и найденный регион
+     * @throws RecordNotFoundException Исключение, генерируемое при отсутствии в справочнике сохраненного региона с
+     *                                 данным идентификатором
+     */
     @Operation(summary = "Get a region by its code")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -155,6 +209,20 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(regionDTO);
     }
 
+    /**
+     * Эндпоинт PUT-запросов для обновления региона по идентификатору
+     *
+     * @param id        Тип: {@link String}. Идентификатор, по которому осуществляется поиск. Идентификатор региона,  по
+     *                  которому осуществляется поиск. Состоит из 2 или 3 цифр и не может состоять только из нулей
+     * @param regionDTO Тип: {@link RegionDTO}. Объект трансфера данных, на основе которого генерируется сущность, заменяющая
+     *                  данные в репозитории
+     * @return Возвращает сущность ответа сервера, содержащую статус 200, статус успешности обновления записи и само
+     * обновляемое значение
+     * @throws RecordNotFoundException        Исключение, генерируемое при отсутствии в справочнике сохраненного региона с
+     *                                        данным идентификатором
+     * @throws DuplicateUniqueValuesException Исключение, генерируемое при попытке обновить идентификатор региона на
+     *                                        уже существующий в репозитории
+     */
     @Operation(summary = "Update an existing region by its code")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -183,6 +251,15 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Эндпоинт DELETE-запросов для удаления региона по идентификатору
+     *
+     * @param id Тип: {@link String}. Идентификатор региона, по которому осуществляется поиск. Идентификатор региона, по
+     *           которому осуществляется поиск. Состоит из 2 или 3 цифр и не может состоять только из нулей
+     * @return Возвращает сущность ответа сервера, содержащую код 200 и статус успешности удаления
+     * @throws RecordNotFoundException Исключение, генерируемое при отсутствии в справочнике сохраненного региона с
+     *                                 данным идентификатором
+     */
     @Operation(summary = "Delete an existing region by its code")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -206,7 +283,7 @@ public class RegionDirectoryController {
      * Обрабатывает исключение, генерируемое при попытке добавить в репозиторий сущность, нарушающую уникальность
      * некоторых полей
      *
-     * @param ex Тип: DuplicateUniqueValuesException. Перехваченное исключение
+     * @param ex Тип: {@link DuplicateUniqueValuesException}. Перехваченное исключение
      * @return Возвращает сущность ответа сервера, содержащую временную метку, статус 400, сообщение об ошибке и
      * список пар, состоящих из названия поля-дубликата и его значения
      */
@@ -226,7 +303,7 @@ public class RegionDirectoryController {
     /**
      * Обрабатывает исключение, генерируемое при отсутствии в репозитории искомой записи
      *
-     * @param ex Тип: RecordNotFoundException. Перехваченное исключение
+     * @param ex Тип: {@link RecordNotFoundException}. Перехваченное исключение
      * @return Возвращает сущность ответа сервера, содержащую временную метку, статус 404 и сообщение об ошибке
      */
     @ExceptionHandler(RecordNotFoundException.class)

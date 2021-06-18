@@ -7,7 +7,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
-
+/**
+ * Главный класс сервера
+ */
 @OpenAPIDefinition(
         info = @Info(
                 title = "Region dictionary",
@@ -20,6 +22,11 @@ import org.springframework.cache.annotation.EnableCaching;
 @EnableCaching
 public class TestTaskApplication {
 
+    /**
+     * Точка запуска сервера
+     *
+     * @param args Тип: {@link String String[]}. Параметры командной строки при запуске приложения
+     */
     public static void main(String[] args) {
         SpringApplication.run(TestTaskApplication.class, args);
     }

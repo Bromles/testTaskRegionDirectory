@@ -12,8 +12,8 @@ public class DuplicateUniqueValuesException extends Exception {
     /**
      * Конструктор, генерирующий исключение на основе списка полей, в которых обнаружены дубликаты
      *
-     * @param violatedFields Тип: Map<String, Object>. Список пар, состоящих из названия поля-дубликата и самого
-     *                       дублирующего значения
+     * @param violatedFields Тип: {@link Map Map<String, Object>}. Список пар, состоящих из названия поля-дубликата и
+     *                       самого дублирующего значения
      */
     public DuplicateUniqueValuesException(Map<String, Object> violatedFields) {
         this.violatedFields = violatedFields;
