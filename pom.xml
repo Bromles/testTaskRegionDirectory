@@ -87,6 +87,16 @@
                     <destDir>javadoc</destDir>
                     <excludePackageNames>com.bromles.test_task_region_directory.controller.schema</excludePackageNames>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                            <goal>javadoc</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
