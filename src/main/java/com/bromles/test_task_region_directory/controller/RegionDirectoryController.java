@@ -202,6 +202,14 @@ public class RegionDirectoryController {
         return ResponseEntity.ok(new ImmutablePair<>("successful", true));
     }
 
+    /**
+     * Обрабатывает исключение, генерируемое при попытке добавить в репозиторий сущность, нарушающую уникальность
+     * некоторых полей
+     *
+     * @param ex Тип: DuplicateUniqueValuesException. Перехваченное исключение
+     * @return Возвращает сущность ответа сервера, содержащую временную метку, статус 400, сообщение об ошибке и
+     * список пар, состоящих из названия поля-дубликата и его значения
+     */
     @ExceptionHandler(DuplicateUniqueValuesException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleDuplicateKeyException(DuplicateUniqueValuesException ex) {
@@ -215,6 +223,12 @@ public class RegionDirectoryController {
         return ResponseEntity.badRequest().body(exceptionData);
     }
 
+    /**
+     * Обрабатывает исключение, генерируемое при отсутствии в репозитории искомой записи
+     *
+     * @param ex Тип: RecordNotFoundException. Перехваченное исключение
+     * @return Возвращает сущность ответа сервера, содержащую временную метку, статус 404 и сообщение об ошибке
+     */
     @ExceptionHandler(RecordNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleRecordNotFoundException(RecordNotFoundException ex) {
