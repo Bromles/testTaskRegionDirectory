@@ -20,6 +20,7 @@ import java.util.Map;
 /**
  * Сервис справочника регионов
  */
+// TODO исправить кэширование возвращаемых значений
 
 @Service
 @CacheConfig(cacheNames = {"regionDTOsById"})
