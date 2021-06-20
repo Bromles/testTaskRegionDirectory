@@ -1,11 +1,9 @@
 package com.bromles.test_task_region_directory;
 
-import com.bromles.test_task_region_directory.controller.RegionDirectoryController;
 import com.bromles.test_task_region_directory.controller.schema.SuccessfullyAddedOrUpdatedResponse;
 import com.bromles.test_task_region_directory.controller.schema.SuccessfullyDeletedResponse;
 import com.bromles.test_task_region_directory.entity.RegionDTO;
 import com.bromles.test_task_region_directory.exception.DuplicateUniqueValuesException;
-import com.bromles.test_task_region_directory.repository.IRegionRepository;
 import com.bromles.test_task_region_directory.service.IRegionDirectoryService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;
