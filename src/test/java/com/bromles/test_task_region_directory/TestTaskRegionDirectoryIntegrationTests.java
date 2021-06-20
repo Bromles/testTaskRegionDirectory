@@ -3,14 +3,12 @@ package com.bromles.test_task_region_directory;
 import com.bromles.test_task_region_directory.controller.RegionDirectoryController;
 import com.bromles.test_task_region_directory.controller.schema.SuccessfullyAddedOrUpdatedResponse;
 import com.bromles.test_task_region_directory.controller.schema.SuccessfullyDeletedResponse;
-import com.bromles.test_task_region_directory.entity.Region;
 import com.bromles.test_task_region_directory.entity.RegionDTO;
 import com.bromles.test_task_region_directory.exception.DuplicateUniqueValuesException;
 import com.bromles.test_task_region_directory.repository.IRegionRepository;
 import com.bromles.test_task_region_directory.service.IRegionDirectoryService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,13 +27,7 @@ class TestTaskRegionDirectoryIntegrationTests {
     private TestRestTemplate testRestTemplate;
 
     @Autowired
-    private RegionDirectoryController controller;
-
-    @Autowired
     private IRegionDirectoryService service;
-
-    @Autowired
-    private IRegionRepository repository;
 
     private static final String v1RegionsMapping = "/v1/regions";
 
