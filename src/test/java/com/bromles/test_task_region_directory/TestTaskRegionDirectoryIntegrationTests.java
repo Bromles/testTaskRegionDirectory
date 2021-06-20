@@ -2,14 +2,15 @@ package com.bromles.test_task_region_directory;
 
 import com.bromles.test_task_region_directory.controller.RegionDirectoryController;
 import com.bromles.test_task_region_directory.controller.schema.SuccessfullyAddedOrUpdatedResponse;
+import com.bromles.test_task_region_directory.controller.schema.SuccessfullyDeletedResponse;
 import com.bromles.test_task_region_directory.entity.Region;
 import com.bromles.test_task_region_directory.entity.RegionDTO;
 import com.bromles.test_task_region_directory.exception.DuplicateUniqueValuesException;
-import com.bromles.test_task_region_directory.exception.RecordNotFoundException;
 import com.bromles.test_task_region_directory.repository.IRegionRepository;
 import com.bromles.test_task_region_directory.service.IRegionDirectoryService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,11 +21,6 @@ import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TestTaskRegionDirectoryIntegrationTests {
@@ -44,12 +40,12 @@ class TestTaskRegionDirectoryIntegrationTests {
     private static final String v1RegionsMapping = "/v1/regions";
 
     @AfterEach
-    void resetDb() {
+    void resetDirectory() {
         try {
-            List<Region> regions = repository.getAll();
+            List<RegionDTO> regions = service.getAll();
 
-            for(Region region : regions) {
-                repository.deleteById(region.getId());
+            for(RegionDTO regionDTO : regions) {
+                service.deleteById(regionDTO.id);
             }
         }
         catch (Exception ignored) {
@@ -90,7 +86,12 @@ class TestTaskRegionDirectoryIntegrationTests {
 
     @Test
     public void add_PostEmptyBody_ReturnStatusBadRequest_andReturnErrorMessage() {
-        ResponseEntity<String> response = testRestTemplate.postForEntity(v1RegionsMapping, null, String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping, HttpMethod.POST, request, String.class);
         String body = response.getBody();
 
         assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
@@ -98,8 +99,10 @@ class TestTaskRegionDirectoryIntegrationTests {
     }
 
     @Test
-    public void add_PostRegionDTOWithExistingId_ReturnStatusBadRequest_andReturnErrorMessage() {
+    public void add_PostRegionDTOWithExistingId_ReturnStatusBadRequest_andReturnErrorMessage() throws DuplicateUniqueValuesException {
         RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
+
+        service.add(regionDTO);
 
         ResponseEntity<String> response = testRestTemplate.postForEntity(v1RegionsMapping, regionDTO, String.class);
         String body = response.getBody();
@@ -113,376 +116,361 @@ class TestTaskRegionDirectoryIntegrationTests {
     public void add_PostPlainText_ReturnStatusUnsupportedMediaType_andReturnErrorMessage() {
         RegionDTO regionDTO = new RegionDTO("78", "город Москва", "МСК");
 
-        String requestBody = objectMapper.writeValueAsString(regionDTO);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        HttpEntity<String> request = new HttpEntity<>(regionDTO.toString(), headers);
 
-        mvc.perform(
-                post(v1RegionsMapping)
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .content(requestBody))
-                .andExpect(status().isUnsupportedMediaType())
-                .andExpect(jsonPath("$.status", is(415)))
-                .andExpect(jsonPath("$.message", is("Server supports only application/json")));
+        ResponseEntity<String> response = testRestTemplate.postForEntity(v1RegionsMapping, request, String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+        assertThat(JsonPath.read(body, "$.message"), is("Server supports only application/json"));
     }
 
     @Test
-    public void getAll_GetNothing_ReturnStatusOk_andReturnRegionDTOs() {
+    public void getAll_GetNothing_ReturnStatusOk_andReturnRegionDTOs() throws DuplicateUniqueValuesException {
         RegionDTO regionDTO = new RegionDTO("78", "город Москва", "МСК");
 
-        List<RegionDTO> allRegions = Collections.singletonList(regionDTO);
+        service.add(regionDTO);
 
-        when(regionDirectoryService.getAll()).thenReturn(allRegions);
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping, String.class);
+        String body = response.getBody();
 
-        mvc.perform(
-                get(v1RegionsMapping)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(regionDTO.id)))
-                .andExpect(jsonPath("$[0].name", is(regionDTO.name)))
-                .andExpect(jsonPath("$[0].shortName", is(regionDTO.shortName)));
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(JsonPath.read(body, "$"), hasSize(1));
+        assertThat(JsonPath.read(body, "$[0].id"), is(regionDTO.id));
+        assertThat(JsonPath.read(body, "$[0].name"), is(regionDTO.name));
+        assertThat(JsonPath.read(body, "$[0].shortName"), is(regionDTO.shortName));
     }
 
     @Test
     public void getAll_GetNotExisting_ReturnStatusNotFound_andReturnErrorMessage() {
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping, String.class);
+        String body = response.getBody();
 
-        when(regionDirectoryService.getAll()).thenThrow(new RecordNotFoundException());
-
-        mvc.perform(
-                get(v1RegionsMapping)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status", is(404)))
-                .andExpect(jsonPath("$.message", is("There are no records")));
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+        assertThat(JsonPath.read(body, "$.message"), is("There are no records"));
     }
 
     @Test
-    public void getByName_GetValidName_ReturnStatusOk_andReturnRegionDTOs() {
+    public void getByName_GetValidName_ReturnStatusOk_andReturnRegionDTOs() throws DuplicateUniqueValuesException {
         String name = "город Москва";
         RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
-        List<RegionDTO> allRegions = Collections.singletonList(regionDTO);
 
-        when(regionDirectoryService.getByName(name)).thenReturn(allRegions);
+        service.add(regionDTO);
 
-        mvc.perform(
-                get(v1RegionsMapping + "?name=" + name)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(regionDTO.id)))
-                .andExpect(jsonPath("$[0].name", is(regionDTO.name)))
-                .andExpect(jsonPath("$[0].shortName", is(regionDTO.shortName)));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?name=" + name,
+                String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(JsonPath.read(body, "$"), hasSize(1));
+        assertThat(JsonPath.read(body, "$[0].id"), is(regionDTO.id));
+        assertThat(JsonPath.read(body, "$[0].name"), is(regionDTO.name));
+        assertThat(JsonPath.read(body, "$[0].shortName"), is(regionDTO.shortName));
     }
 
     @Test
     public void getByName_GetEmptyName_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
 
-        mvc.perform(
-                get(v1RegionsMapping + "?name=")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.errors[0]",
-                        anyOf(is("Region name must contain only Cyrillic, spaces, dashes and brackets"),
-                                is("Region name can't be blank"))))
-                .andExpect(jsonPath("$.errors[1]",
-                        anyOf(is("Region name must contain only Cyrillic, spaces, dashes and brackets"),
-                                is("Region name can't be blank"))));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?name=", String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                anyOf(is("Region name must contain only Cyrillic, spaces, dashes and brackets"),
+                        is("Region name can't be blank")));
+        assertThat(JsonPath.read(body, "$.errors[1]"),
+                anyOf(is("Region name must contain only Cyrillic, spaces, dashes and brackets"),
+                        is("Region name can't be blank")));
     }
 
     @Test
     public void getByName_GetIllegalName_ReturnStatusBadRequest_andReturnValidationErrorMessage() {
-        mvc.perform(
-                get(v1RegionsMapping + "?name=123")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.errors[0]",
-                        is("Region name must contain only Cyrillic, spaces, dashes and brackets")));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?name=123", String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                is("Region name must contain only Cyrillic, spaces, dashes and brackets"));
     }
 
     @Test
     public void getByName_GetNotExistingName_ReturnStatusNotFound_andReturnErrorMessage() {
-
         String name = "город Москва";
 
-        when(regionDirectoryService.getByName(name)).
-                thenThrow(new RecordNotFoundException("name = '" + name + "'"));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?name=" + name,
+                String.class);
+        String body = response.getBody();
 
-        mvc.perform(
-                get(v1RegionsMapping + "?name=" + name)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status", is(404)))
-                .andExpect(jsonPath("$.message", is("No records found by name = '" + name + "'")));
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+        assertThat(JsonPath.read(body, "$.message"), is("No records found by name = '" + name + "'"));
     }
 
     @Test
-    public void getByNameBeginning_GetValidNameBeginning_ReturnStatusOk_andReturnRegionDTOs() {
+    public void getByNameBeginning_GetValidNameBeginning_ReturnStatusOk_andReturnRegionDTOs() throws DuplicateUniqueValuesException {
         RegionDTO regionDTO1 = new RegionDTO("10", "Вологодская область", "ВОЛ");
         RegionDTO regionDTO2 = new RegionDTO("11", "Волгоградская область", "ВЛГ");
         String nameBeginning = "Вол";
 
-        List<RegionDTO> regionDTOs = new ArrayList<>();
-        regionDTOs.add(regionDTO1);
-        regionDTOs.add(regionDTO2);
+        service.add(regionDTO1);
+        service.add(regionDTO2);
 
-        when(regionDirectoryService.getByNameBeginning(nameBeginning)).thenReturn(regionDTOs);
+        ResponseEntity<String> response =
+                testRestTemplate.getForEntity(v1RegionsMapping + "?name-beginning=" + nameBeginning, String.class);
+        String body = response.getBody();
 
-        mvc.perform(
-                get(v1RegionsMapping + "?name-beginning=" + nameBeginning)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(regionDTO1.id)))
-                .andExpect(jsonPath("$[0].name", is(regionDTO1.name)))
-                .andExpect(jsonPath("$[0].shortName", is(regionDTO1.shortName)))
-                .andExpect(jsonPath("$[1].id", is(regionDTO2.id)))
-                .andExpect(jsonPath("$[1].name", is(regionDTO2.name)))
-                .andExpect(jsonPath("$[1].shortName", is(regionDTO2.shortName)));
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(JsonPath.read(body, "$"), hasSize(2));
+        assertThat(JsonPath.read(body, "$[0].id"), is(regionDTO2.id));
+        assertThat(JsonPath.read(body, "$[0].name"), is(regionDTO2.name));
+        assertThat(JsonPath.read(body, "$[0].shortName"), is(regionDTO2.shortName));
+        assertThat(JsonPath.read(body, "$[1].id"), is(regionDTO1.id));
+        assertThat(JsonPath.read(body, "$[1].name"), is(regionDTO1.name));
+        assertThat(JsonPath.read(body, "$[1].shortName"), is(regionDTO1.shortName));
     }
 
     @Test
     public void getByNameBeginning_GetIllegalNameBeginning_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
         String nameBeginning = "123";
 
-        mvc.perform(
-                get(v1RegionsMapping + "?name-beginning=" + nameBeginning)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.errors[0]",
-                        is("Beginning of region name can't be blank, must contain only Cyrillic letters and begins with Capital one")));
+        ResponseEntity<String> response =
+                testRestTemplate.getForEntity(v1RegionsMapping + "?name-beginning=" + nameBeginning, String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                is("Beginning of region name can't be blank, must contain only Cyrillic letters and begins with " +
+                        "Capital one"));
     }
 
     @Test
     public void getByNameBeginning_GetEmptyNameBeginning_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
 
-        mvc.perform(
-                get(v1RegionsMapping + "?name-beginning=")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.errors[0]",
-                        is("Beginning of region name can't be blank, must contain only Cyrillic letters and begins with Capital one")));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?name-beginning=", String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                is("Beginning of region name can't be blank, must contain only Cyrillic letters and begins with " +
+                        "Capital one"));
     }
 
     @Test
     public void getByNameBeginning_GetNotExistingNameBeginning_ReturnStatusNotFound_andReturnErrorMessage() {
         String nameBeginning = "Вол";
 
-        when(regionDirectoryService.getByNameBeginning(nameBeginning)).
-                thenThrow(new RecordNotFoundException("name beginning = '" + nameBeginning + "'"));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?name-beginning=" + nameBeginning,
+                String.class);
+        String body = response.getBody();
 
-        mvc.perform(
-                get(v1RegionsMapping + "?name-beginning=" + nameBeginning)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status", is(404)))
-                .andExpect(jsonPath("$.message",
-                        is("No records found by name beginning = '" + nameBeginning + "'")));
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+        assertThat(JsonPath.read(body, "$.message"),
+                is("No records found by name beginning = '" + nameBeginning + "'"));
     }
 
     @Test
-    public void getByShortName_GetValidShortName_ReturnStatusOk_andReturnRegionDTOs() {
+    public void getByShortName_GetValidShortName_ReturnStatusOk_andReturnRegionDTOs() throws DuplicateUniqueValuesException {
         String shortName = "МСК";
 
         RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
-        List<RegionDTO> allRegions = Collections.singletonList(regionDTO);
 
-        when(regionDirectoryService.getByShortName(shortName)).thenReturn(allRegions);
+        service.add(regionDTO);
 
-        mvc.perform(
-                get(v1RegionsMapping + "?short-name=" + shortName)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(regionDTO.id)))
-                .andExpect(jsonPath("$[0].name", is(regionDTO.name)))
-                .andExpect(jsonPath("$[0].shortName", is(regionDTO.shortName)));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?short-name=" + shortName,
+                String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(JsonPath.read(body, "$[0].id"), is(regionDTO.id));
+        assertThat(JsonPath.read(body, "$[0].name"), is(regionDTO.name));
+        assertThat(JsonPath.read(body, "$[0].shortName"), is(regionDTO.shortName));
     }
 
     @Test
     public void getByShortName_GetIllegalShortName_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
         String shortName = "123";
 
-        mvc.perform(
-                get(v1RegionsMapping + "?short-name=" + shortName)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.errors[0]",
-                        is("Region short name can't be blank and must be 3 Capital Cyrillic letters")));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?short-name=" + shortName,
+                String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                is("Region short name can't be blank and must be 3 Capital Cyrillic letters"));
     }
 
     @Test
     public void getByShortName_GetEmptyShortName_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
 
-        mvc.perform(
-                get(v1RegionsMapping + "?short-name=")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.errors[0]",
-                        is("Region short name can't be blank and must be 3 Capital Cyrillic letters")));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?short-name=", String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                is("Region short name can't be blank and must be 3 Capital Cyrillic letters"));
     }
 
     @Test
     public void getByShortName_GetNotExistingShortName_ReturnStatusNotFound_andReturnErrorMessage() {
         String shortName = "МСК";
 
-        when(regionDirectoryService.getByShortName(shortName)).
-                thenThrow(new RecordNotFoundException("short name = '" + shortName + "'"));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "?short-name=" + shortName,
+                String.class);
+        String body = response.getBody();
 
-        mvc.perform(
-                get(v1RegionsMapping + "?short-name=" + shortName)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status", is(404)))
-                .andExpect(jsonPath("$.message", is("No records found by short name = '" + shortName + "'")));
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+        assertThat(JsonPath.read(body, "$.message"),
+                is("No records found by short name = '" + shortName + "'"));
     }
 
     @Test
-    public void getById_GetValidId_ReturnStatusOk_andReturnRegionDTO() {
+    public void getById_GetValidId_ReturnStatusOk_andReturnRegionDTO() throws DuplicateUniqueValuesException {
         RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
-        String id = "10";
 
-        when(regionDirectoryService.getById(id)).thenReturn(regionDTO);
+        service.add(regionDTO);
 
-        mvc.perform(
-                get(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(regionDTO.id)))
-                .andExpect(jsonPath("$.name", is(regionDTO.name)))
-                .andExpect(jsonPath("$.shortName", is(regionDTO.shortName)));
+        ResponseEntity<String> response =
+                testRestTemplate.getForEntity(v1RegionsMapping + "/" + regionDTO.id, String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(JsonPath.read(body, "$[0].id"), is(regionDTO.id));
+        assertThat(JsonPath.read(body, "$[0].name"), is(regionDTO.name));
+        assertThat(JsonPath.read(body, "$[0].shortName"), is(regionDTO.shortName));
     }
 
     @Test
     public void getById_GetIllegalId_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
         String id = "00";
 
-        mvc.perform(
-                get(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0]",
-                        is("Region id must be 2 or 3 digits and mustn't contain only zeros")));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "/" + id, String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                is("Region id must be 2 or 3 digits and mustn't contain only zeros"));
     }
 
     @Test
     public void getById_GetNotExistingId_ReturnStatusNotFound_andReturnValidationErrorMessages() {
         String id = "10";
 
-        when(regionDirectoryService.getById(id)).
-                thenThrow(new RecordNotFoundException("id = '" + id + "'"));
+        ResponseEntity<String> response = testRestTemplate.getForEntity(v1RegionsMapping + "/" + id, String.class);
+        String body = response.getBody();
 
-        mvc.perform(
-                get(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status", is(404)))
-                .andExpect(jsonPath("$.message", is("No records found by id = '" + id + "'")));
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+        assertThat(JsonPath.read(body, "$.message"), is("No records found by id = '" + id + "'"));
     }
 
     @Test
-    public void updateById_UpdateValidIdAndValidRegionDTO_ReturnStatusOk_andReturnRegionDTO() {
+    public void updateById_UpdateValidIdAndValidRegionDTO_ReturnStatusOk_andReturnRegionDTO() throws DuplicateUniqueValuesException {
         RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
         String id = "10";
 
-        String requestBody = objectMapper.writeValueAsString(regionDTO);
+        service.add(regionDTO);
 
-        mvc.perform(
-                put(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.successful", is(true)))
-                .andExpect(jsonPath("$.value.id", is(regionDTO.id)))
-                .andExpect(jsonPath("$.value.name", is(regionDTO.name)))
-                .andExpect(jsonPath("$.value.shortName", is(regionDTO.shortName)));
+        HttpEntity<RegionDTO> request = new HttpEntity<>(regionDTO);
+
+        ResponseEntity<SuccessfullyAddedOrUpdatedResponse> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/" + id, HttpMethod.PUT, request,
+                        SuccessfullyAddedOrUpdatedResponse.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getSuccessful(), is(true));
+        assertThat(response.getBody().getValue().id, is(regionDTO.id));
+        assertThat(response.getBody().getValue().name, is(regionDTO.name));
+        assertThat(response.getBody().getValue().shortName, is(regionDTO.shortName));
     }
 
     @Test
-    public void updateById_UpdateValidIdAndRegionDTOWithExistingId_ReturnStatusBadRequest_andReturnErrorMessage() {
+    public void updateById_UpdateValidIdAndRegionDTOWithExistingId_ReturnStatusBadRequest_andReturnErrorMessage() throws DuplicateUniqueValuesException {
         RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
         String id = "10";
 
-        String requestBody = objectMapper.writeValueAsString(regionDTO);
+        service.add(regionDTO);
 
-        Map<String, Object> violatedFields = new HashMap<>();
-        violatedFields.put("id", id);
+        HttpEntity<RegionDTO> request = new HttpEntity<>(regionDTO);
 
-        doThrow(new DuplicateUniqueValuesException(violatedFields)).when(regionDirectoryService).updateById(id, regionDTO);
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/" + id, HttpMethod.PUT, request, String.class);
+        String body = response.getBody();
 
-        mvc.perform(
-                put(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.message", is("Duplicate primary key or unique index")))
-                .andExpect(jsonPath("$.violated-fields.id", is(id)));
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.message"), is("Duplicate primary key or unique index"));
+        assertThat(JsonPath.read(body, "$.violated-fields.id"), is(id));
     }
 
     @Test
-    public void updateById_UpdateIllegalIdAndValidRegionDTO_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
+    public void updateById_UpdateIllegalIdAndValidRegionDTO_ReturnStatusBadRequest_andReturnValidationErrorMessages() throws DuplicateUniqueValuesException {
         RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
         String id = "00";
 
-        String requestBody = objectMapper.writeValueAsString(regionDTO);
+        service.add(regionDTO);
 
-        mvc.perform(
-                put(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.errors[0]",
-                        is("Region id must be 2 or 3 digits and mustn't contain only zeros")));
+        HttpEntity<RegionDTO> request = new HttpEntity<>(regionDTO);
+
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/" + id, HttpMethod.PUT, request, String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                is("Region id must be 2 or 3 digits and mustn't contain only zeros"));
     }
 
     @Test
-    public void updateById_UpdateEmptyIdAndValidRegionDTO_ReturnStatusMethodNotAllowed() {
+    public void updateById_UpdateEmptyIdAndValidRegionDTO_ReturnStatusMethodNotAllowed() throws DuplicateUniqueValuesException {
         RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
 
-        String requestBody = objectMapper.writeValueAsString(regionDTO);
+        service.add(regionDTO);
 
-        mvc.perform(
-                put(v1RegionsMapping + "/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isMethodNotAllowed());
+        HttpEntity<RegionDTO> request = new HttpEntity<>(regionDTO);
+
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/", HttpMethod.PUT, request, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.METHOD_NOT_ALLOWED));
     }
 
     @Test
-    public void updateById_UpdateValidIdAndEmptyBody_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
+    public void updateById_UpdateValidIdAndEmptyBody_ReturnStatusBadRequest_andReturnValidationErrorMessages() throws DuplicateUniqueValuesException {
         String id = "10";
+        RegionDTO regionDTO = new RegionDTO("10", "Москва", "МСК");
 
-        mvc.perform(
-                put(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.message", is("Unformed JSON in request body")));
+        service.add(regionDTO);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/" + id, HttpMethod.PUT, request, String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.message"), is("Unformed JSON in request body"));
     }
 
     @Test
-    public void updateById_UpdateValidIdAndIllegalRegionDTO_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
+    public void updateById_UpdateValidIdAndIllegalRegionDTO_ReturnStatusBadRequest_andReturnValidationErrorMessages() throws DuplicateUniqueValuesException {
         RegionDTO regionDTO = new RegionDTO();
+        RegionDTO regionDTO1 = new RegionDTO("10", "Москва", "МСК");
         String id = "10";
 
-        String requestBody = objectMapper.writeValueAsString(regionDTO);
+        service.add(regionDTO1);
 
-        mvc.perform(
-                put(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.errors[0]",
-                        anyOf(is("Region code cannot be blank"), is("Region name cannot be blank"))))
-                .andExpect(jsonPath("$.errors[1]",
-                        anyOf(is("Region code cannot be blank"), is("Region name cannot be blank"))));
+        HttpEntity<RegionDTO> request = new HttpEntity<>(regionDTO);
+
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/" + id, HttpMethod.PUT, request, String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                anyOf(is("Region code cannot be blank"), is("Region name cannot be blank")));
+        assertThat(JsonPath.read(body, "$.errors[1]"),
+                anyOf(is("Region code cannot be blank"), is("Region name cannot be blank")));
     }
 
     @Test
@@ -490,75 +478,89 @@ class TestTaskRegionDirectoryIntegrationTests {
         String id = "10";
         RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
 
-        doThrow(new RecordNotFoundException("id = '" + id + "'")).when(regionDirectoryService).updateById(id,
-                regionDTO);
+        HttpEntity<RegionDTO> request = new HttpEntity<>(regionDTO);
 
-        String requestBody = objectMapper.writeValueAsString(regionDTO);
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/" + id, HttpMethod.PUT, request, String.class);
+        String body = response.getBody();
 
-        mvc.perform(
-                put(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status", is(404)))
-                .andExpect(jsonPath("$.message", is("No records found by id = '" + id + "'")));
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+        assertThat(JsonPath.read(body, "$.message"), is("No records found by id = '" + id + "'"));
     }
 
     @Test
-    public void updateById_UpdateValidIdAndPlainText_ReturnStatusUnsupportedMediaType_andReturnErrorMessage() {
+    public void updateById_UpdateValidIdAndPlainText_ReturnStatusUnsupportedMediaType_andReturnErrorMessage() throws DuplicateUniqueValuesException {
         String id = "10";
-        RegionDTO regionDTO = new RegionDTO("78", "город Москва", "МСК");
+        RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
 
-        String requestBody = objectMapper.writeValueAsString(regionDTO);
+        service.add(regionDTO);
 
-        mvc.perform(
-                put(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .content(requestBody))
-                .andExpect(status().isUnsupportedMediaType())
-                .andExpect(jsonPath("$.status", is(415)))
-                .andExpect(jsonPath("$.message", is("Server supports only application/json")));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        HttpEntity<String> request = new HttpEntity<>(regionDTO.toString(), headers);
+
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/" + id, HttpMethod.PUT, request, String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+        assertThat(JsonPath.read(body, "$.message"), is("Server supports only application/json"));
     }
 
     @Test
-    public void deleteById_DeleteValidId_ReturnStatusOk_andReturnMessage() {
-        mvc.perform(
-                delete(v1RegionsMapping + "/10")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.successful", is(true)));
+    public void deleteById_DeleteValidId_ReturnStatusOk_andReturnMessage() throws DuplicateUniqueValuesException {
+        RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
+
+        service.add(regionDTO);
+
+        HttpEntity<RegionDTO> request = new HttpEntity<>(null);
+        ResponseEntity<SuccessfullyDeletedResponse> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/" + regionDTO.id, HttpMethod.DELETE, request,
+                        SuccessfullyDeletedResponse.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getSuccessful(), is(true));
     }
 
     @Test
-    public void deleteById_DeleteIllegalId_ReturnStatusBadRequest_andReturnValidationErrorMessages() {
-        mvc.perform(
-                delete(v1RegionsMapping + "/00")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status", is(400)))
-                .andExpect(jsonPath("$.errors[0]",
-                        is("Region id must be 2 or 3 digits and mustn't contain only zeros")));
+    public void deleteById_DeleteIllegalId_ReturnStatusBadRequest_andReturnValidationErrorMessages() throws DuplicateUniqueValuesException {
+        RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
+
+        service.add(regionDTO);
+
+        HttpEntity<RegionDTO> request = new HttpEntity<>(null);
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/00", HttpMethod.DELETE, request, String.class);
+        String body = response.getBody();
+
+        assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+        assertThat(JsonPath.read(body, "$.errors[0]"),
+                is("Region id must be 2 or 3 digits and mustn't contain only zeros"));
     }
 
     @Test
-    public void deleteById_DeleteEmptyId_ReturnStatusMethodNotAllowed() {
-        mvc.perform(
-                delete(v1RegionsMapping + "/")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isMethodNotAllowed());
+    public void deleteById_DeleteEmptyId_ReturnStatusMethodNotAllowed() throws DuplicateUniqueValuesException {
+        RegionDTO regionDTO = new RegionDTO("10", "город Москва", "МСК");
+
+        service.add(regionDTO);
+
+        HttpEntity<RegionDTO> request = new HttpEntity<>(null);
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/", HttpMethod.DELETE, request, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.METHOD_NOT_ALLOWED));
     }
 
     @Test
     public void deleteById_DeleteNotExistingId_ReturnStatusNotFound_andReturnErrorMessage() {
         String id = "10";
 
-        doThrow(new RecordNotFoundException("id = '" + id + "'")).when(regionDirectoryService).deleteById(id);
+        HttpEntity<RegionDTO> request = new HttpEntity<>(null);
+        ResponseEntity<String> response =
+                testRestTemplate.exchange(v1RegionsMapping + "/" + id, HttpMethod.DELETE, request, String.class);
+        String body = response.getBody();
 
-        mvc.perform(
-                delete(v1RegionsMapping + "/" + id)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status", is(404)))
-                .andExpect(jsonPath("$.message", is("No records found by id = '" + id + "'")));
+        assertThat(response.getStatusCode(), is(HttpStatus.NOT_FOUND));
+        assertThat(JsonPath.read(body, "$.message"), is("No records found by id = '" + id + "'"));
     }
 }
